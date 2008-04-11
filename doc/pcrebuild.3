@@ -256,6 +256,33 @@ to the \fBconfigure\fP command. This setting implies
 --enable-rebuild-chartables. You should only use it if you know that you are in
 an EBCDIC environment (for example, an IBM mainframe operating system).
 .
+.SH "PCREGREP OPTIONS FOR COMPRESSED FILE SUPPORT"
+.rs
+.sp
+By default, \fBpcregrep\fP reads all files as plain text. You can build it so
+that it recognizes files whose names end in \fB.gz\fP or \fB.bz2\fP, and reads
+them with \fBlibz\fP or \fBlibbz2\fP, respectively, by adding one or both of
+.sp
+  --enable-pcregrep-libz
+  --enable-pcregrep-libbz2
+.sp
+to the \fBconfigure\fP command. These options naturally require that the
+relevant libraries are installed on your system. Configuration will fail if
+they are not.
+.
+.SH "PCRETEST OPTION FOR LIBREADLINE SUPPORT"
+.rs
+.sp
+If you add
+.sp
+  --enable-pcretest-libreadline
+.sp
+to the \fBconfigure\fP command, \fBpcretest\fP is linked with the
+\fBlibreadline\fP library, and when its input is from a terminal, it reads it
+using the \fBreadline()\fP function. This provides line-editing and history
+facilities. Note that \fBlibreadline\fP is GPL-licenced, so if you distribute a
+binary of \fBpcretest\fP linked in this way, there may be licensing issues.
+.
 .
 .SH "SEE ALSO"
 .rs
@@ -277,6 +304,6 @@ Cambridge CB2 3QH, England.
 .rs
 .sp
 .nf
-Last updated: 21 September 2007
+Last updated: 18 December 2007
 Copyright (c) 1997-2007 University of Cambridge.
 .fi
