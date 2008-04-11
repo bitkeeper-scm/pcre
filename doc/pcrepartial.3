@@ -99,7 +99,7 @@ pattern, but the first two are partial matches. The same test, using
 \fBpcre_dfa_exec()\fP matching (by means of the \eD escape sequence), produces
 the following output:
 .sp
-    re> /^\d?\d(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\d\d$/
+    re> /^\ed?\ed(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\ed\ed$/
   data> 25jun04\eP\eD
    0: 25jun04
   data> 23dec3\eP\eD
@@ -126,7 +126,7 @@ space as before, because this is where details of the previous partial match
 are stored. Here is an example using \fBpcretest\fP, using the \eR escape
 sequence to set the PCRE_DFA_RESTART option (\eP and \eD are as above):
 .sp
-    re> /^\d?\d(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\d\d$/
+    re> /^\ed?\ed(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\ed\ed$/
   data> 23ja\eP\eD
   Partial match: 23ja
   data> n05\eR\eD
@@ -157,7 +157,7 @@ bytes at the start of the buffer.
 always produce exactly the same result as matching over one single long string.
 The difference arises when there are multiple matching possibilities, because a
 partial match result is given only when there are no completed matches in a
-call to fBpcre_dfa_exec()\fP. This means that as soon as the shortest match has
+call to \fBpcre_dfa_exec()\fP. This means that as soon as the shortest match has
 been found, continuation to a new subject segment is no longer possible.
 Consider this \fBpcretest\fP example:
 .sp
@@ -198,8 +198,20 @@ patterns or patterns such as:
 where no string can be a partial match for both alternatives.
 .
 .
-.P
-.in 0
-Last updated: 30 November 2006
-.br
-Copyright (c) 1997-2006 University of Cambridge.
+.SH AUTHOR
+.rs
+.sp
+.nf
+Philip Hazel
+University Computing Service
+Cambridge CB2 3QH, England.
+.fi
+.
+.
+.SH REVISION
+.rs
+.sp
+.nf
+Last updated: 06 March 2007
+Copyright (c) 1997-2007 University of Cambridge.
+.fi

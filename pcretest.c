@@ -67,13 +67,16 @@ input mode under Windows. */
 #endif
 
 
-#define PCRE_SPY        /* For Win32 build, import data, not export */
+/* We have to include pcre_internal.h because we need the internal info for
+displaying the results of pcre_study() and we also need to know about the
+internal macros, structures, and other internal data values; pcretest has
+"inside information" compared to a program that strictly follows the PCRE API.
 
-/* We include pcre_internal.h because we need the internal info for displaying
-the results of pcre_study() and we also need to know about the internal
-macros, structures, and other internal data values; pcretest has "inside
-information" compared to a program that strictly follows the PCRE API. */
+Although pcre_internal.h does itself include pcre.h, we explicitly include it
+here before pcre_internal.h so that the PCRE_EXP_xxx macros get set
+appropriately for an application, not for building PCRE. */
 
+#include "pcre.h"
 #include "pcre_internal.h"
 
 /* We need access to the data tables that PCRE uses. So as not to have to keep
@@ -114,10 +117,17 @@ Makefile. */
 #include "pcreposix.h"
 #endif
 
-/* It is also possible, for the benefit of the version imported into Exim, to
-build pcretest without support for UTF8 (define NOUTF8), without the interface
-to the DFA matcher (NODFA), and without the doublecheck of the old "info"
-function (define NOINFOCHECK). */
+/* It is also possible, for the benefit of the version currently imported into
+Exim, to build pcretest without support for UTF8 (define NOUTF8), without the
+interface to the DFA matcher (NODFA), and without the doublecheck of the old
+"info" function (define NOINFOCHECK). In fact, we automatically cut out the
+UTF8 support if PCRE is built without it. */
+
+#ifndef SUPPORT_UTF8
+#ifndef NOUTF8
+#define NOUTF8
+#endif
+#endif
 
 
 /* Other parameters */
@@ -653,7 +663,8 @@ return count;
 *************************************************/
 
 /* This is used both at compile and run-time to check for <xxx> escapes, where
-xxx is LF, CR, CRLF, or ANY. Print a message and return 0 if there is no match.
+xxx is LF, CR, CRLF, ANYCRLF, or ANY. Print a message and return 0 if there is
+no match.
 
 Arguments:
   p           points after the leading '<'
@@ -668,6 +679,7 @@ check_newline(uschar *p, FILE *f)
 if (strncmp((char *)p, "cr>", 3) == 0) return PCRE_NEWLINE_CR;
 if (strncmp((char *)p, "lf>", 3) == 0) return PCRE_NEWLINE_LF;
 if (strncmp((char *)p, "crlf>", 5) == 0) return PCRE_NEWLINE_CRLF;
+if (strncmp((char *)p, "anycrlf>", 8) == 0) return PCRE_NEWLINE_ANYCRLF;
 if (strncmp((char *)p, "any>", 4) == 0) return PCRE_NEWLINE_ANY;
 fprintf(f, "Unknown newline type at: <%s\n", p);
 return 0;
@@ -840,6 +852,7 @@ while (argc > 1 && argv[op][0] == '-')
     (void)pcre_config(PCRE_CONFIG_NEWLINE, &rc);
     printf("  Newline sequence is %s\n", (rc == '\r')? "CR" :
       (rc == '\n')? "LF" : (rc == ('\r'<<8 | '\n'))? "CRLF" :
+      (rc == -2)? "ANYCRLF" :
       (rc == -1)? "ANY" : "???");
     (void)pcre_config(PCRE_CONFIG_LINK_SIZE, &rc);
     printf("  Internal link size = %d\n", rc);
@@ -851,7 +864,7 @@ while (argc > 1 && argv[op][0] == '-')
     printf("  Default recursion depth limit = %d\n", rc);
     (void)pcre_config(PCRE_CONFIG_STACKRECURSE, &rc);
     printf("  Match recursion uses %s\n", rc? "stack" : "heap");
-    exit(0);
+    goto EXIT;
     }
   else if (strcmp(argv[op], "-help") == 0 ||
            strcmp(argv[op], "--help") == 0)
@@ -877,7 +890,7 @@ offsets = (int *)malloc(size_offsets_max * sizeof(int));
 if (offsets == NULL)
   {
   printf("** Failed to get %d bytes of memory for offsets vector\n",
-    size_offsets_max * sizeof(int));
+    (int)(size_offsets_max * sizeof(int)));
   yield = 1;
   goto EXIT;
   }
@@ -937,6 +950,7 @@ while (!done)
   size_t size, regex_gotten_store;
   int do_study = 0;
   int do_debug = debug;
+  int debug_lengths = 1;
   int do_G = 0;
   int do_g = 0;
   int do_showinfo = showinfo;
@@ -1127,6 +1141,7 @@ while (!done)
       case 'S': do_study = 1; break;
       case 'U': options |= PCRE_UNGREEDY; break;
       case 'X': options |= PCRE_EXTRA; break;
+      case 'Z': debug_lengths = 0; break;
       case '8': options |= PCRE_UTF8; use_utf8 = 1; break;
       case '?': options |= PCRE_NO_UTF8_CHECK; break;
 
@@ -1328,7 +1343,7 @@ while (!done)
     if (do_debug)
       {
       fprintf(outfile, "------------------------------------------------------------------\n");
-      pcre_printint(re, outfile);
+      pcre_printint(re, outfile, debug_lengths);
       }
 
     if (do_showinfo)
@@ -1431,6 +1446,10 @@ while (!done)
 
         case PCRE_NEWLINE_CRLF:
         fprintf(outfile, "Forced newline sequence: CRLF\n");
+        break;
+
+        case PCRE_NEWLINE_ANYCRLF:
+        fprintf(outfile, "Forced newline sequence: ANYCRLF\n");
         break;
 
         case PCRE_NEWLINE_ANY:
@@ -1582,7 +1601,7 @@ while (!done)
   for (;;)
     {
     uschar *q;
-    uschar *bptr = dbuffer;
+    uschar *bptr;
     int *use_offsets = offsets;
     int use_size_offsets = size_offsets;
     int callout_data = 0;
@@ -1638,7 +1657,7 @@ while (!done)
     p = buffer;
     while (isspace(*p)) p++;
 
-    q = dbuffer;
+    bptr = q = dbuffer;
     while ((c = *p++) != 0)
       {
       int i = 0;
@@ -1833,7 +1852,7 @@ while (!done)
           if (offsets == NULL)
             {
             printf("** Failed to get %d bytes of memory for offsets vector\n",
-              size_offsets_max * sizeof(int));
+              (int)(size_offsets_max * sizeof(int)));
             yield = 1;
             goto EXIT;
             }
@@ -2202,19 +2221,44 @@ while (!done)
         }
 
       /* Failed to match. If this is a /g or /G loop and we previously set
-      g_notempty after a null match, this is not necessarily the end.
-      We want to advance the start offset, and continue. In the case of UTF-8
-      matching, the advance must be one character, not one byte. Fudge the
-      offset values to achieve this. We won't be at the end of the string -
-      that was checked before setting g_notempty. */
+      g_notempty after a null match, this is not necessarily the end. We want
+      to advance the start offset, and continue. We won't be at the end of the
+      string - that was checked before setting g_notempty.
+
+      Complication arises in the case when the newline option is "any" or
+      "anycrlf". If the previous match was at the end of a line terminated by
+      CRLF, an advance of one character just passes the \r, whereas we should
+      prefer the longer newline sequence, as does the code in pcre_exec().
+      Fudge the offset value to achieve this.
+
+      Otherwise, in the case of UTF-8 matching, the advance must be one
+      character, not one byte. */
 
       else
         {
         if (g_notempty != 0)
           {
           int onechar = 1;
+          unsigned int obits = ((real_pcre *)re)->options;
           use_offsets[0] = start_offset;
-          if (use_utf8)
+          if ((obits & PCRE_NEWLINE_BITS) == 0)
+            {
+            int d;
+            (void)pcre_config(PCRE_CONFIG_NEWLINE, &d);
+            obits = (d == '\r')? PCRE_NEWLINE_CR :
+                    (d == '\n')? PCRE_NEWLINE_LF :
+                    (d == ('\r'<<8 | '\n'))? PCRE_NEWLINE_CRLF :
+                    (d == -2)? PCRE_NEWLINE_ANYCRLF :
+                    (d == -1)? PCRE_NEWLINE_ANY : 0;
+            }
+          if (((obits & PCRE_NEWLINE_BITS) == PCRE_NEWLINE_ANY ||
+               (obits & PCRE_NEWLINE_BITS) == PCRE_NEWLINE_ANYCRLF)
+              &&
+              start_offset < len - 1 &&
+              bptr[start_offset] == '\r' &&
+              bptr[start_offset+1] == '\n')
+            onechar++;
+          else if (use_utf8)
             {
             while (start_offset + onechar < len)
               {
@@ -2249,6 +2293,7 @@ while (!done)
       character. */
 
       g_notempty = 0;
+
       if (use_offsets[0] == use_offsets[1])
         {
         if (use_offsets[0] == len) break;

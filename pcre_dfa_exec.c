@@ -6,7 +6,7 @@
 and semantics are as close as possible to those of the Perl 5 language.
 
                        Written by Philip Hazel
-           Copyright (c) 1997-2006 University of Cambridge
+           Copyright (c) 1997-2007 University of Cambridge
 
 -----------------------------------------------------------------------------
 Redistribution and use in source and binary forms, with or without
@@ -500,7 +500,9 @@ for (;;)
     const uschar *code;
     int state_offset = current_state->offset;
     int count, codevalue;
+#ifdef SUPPORT_UCP
     int chartype, script;
+#endif
 
 #ifdef DEBUG
     printf ("%.*sProcessing state %d c=", rlevel*2-2, SP, state_offset);
@@ -783,13 +785,12 @@ for (;;)
       break;
 
 
-#ifdef SUPPORT_UCP
-
       /*-----------------------------------------------------------------*/
       /* Check the next character by Unicode property. We will get here only
       if the support is in the binary; otherwise a compile-time error occurs.
       */
 
+#ifdef SUPPORT_UCP
       case OP_PROP:
       case OP_NOTPROP:
       if (clen > 0)
@@ -970,6 +971,7 @@ for (;;)
       argument. It keeps the code above fast for the other cases. The argument
       is in the d variable. */
 
+#ifdef SUPPORT_UCP
       case OP_PROP_EXTRA + OP_TYPEPLUS:
       case OP_PROP_EXTRA + OP_TYPEMINPLUS:
       case OP_PROP_EXTRA + OP_TYPEPOSPLUS:
@@ -1049,6 +1051,7 @@ for (;;)
         ADD_NEW_DATA(-state_offset, count, ncount);
         }
       break;
+#endif
 
       /*-----------------------------------------------------------------*/
       case OP_ANYNL_EXTRA + OP_TYPEPLUS:
@@ -1085,6 +1088,7 @@ for (;;)
       break;
 
       /*-----------------------------------------------------------------*/
+#ifdef SUPPORT_UCP
       case OP_PROP_EXTRA + OP_TYPEQUERY:
       case OP_PROP_EXTRA + OP_TYPEMINQUERY:
       case OP_PROP_EXTRA + OP_TYPEPOSQUERY:
@@ -1182,6 +1186,7 @@ for (;;)
         ADD_NEW_DATA(-(state_offset + count), 0, ncount);
         }
       break;
+#endif
 
       /*-----------------------------------------------------------------*/
       case OP_ANYNL_EXTRA + OP_TYPEQUERY:
@@ -1226,6 +1231,7 @@ for (;;)
       break;
 
       /*-----------------------------------------------------------------*/
+#ifdef SUPPORT_UCP
       case OP_PROP_EXTRA + OP_TYPEEXACT:
       case OP_PROP_EXTRA + OP_TYPEUPTO:
       case OP_PROP_EXTRA + OP_TYPEMINUPTO:
@@ -1313,6 +1319,7 @@ for (;;)
           { ADD_NEW_DATA(-state_offset, count, ncount); }
         }
       break;
+#endif
 
       /*-----------------------------------------------------------------*/
       case OP_ANYNL_EXTRA + OP_TYPEEXACT:
@@ -2057,7 +2064,7 @@ is not anchored.
 
 Arguments:
   argument_re     points to the compiled expression
-  extra_data      points to extra data or is NULL (not currently used)
+  extra_data      points to extra data or is NULL
   subject         points to the subject string
   length          length of subject string (may contain binary zeros)
   start_offset    where to start in the subject string
@@ -2073,7 +2080,7 @@ Returns:          > 0 => number of match offset pairs placed in offsets
                  < -1 => some kind of unexpected problem
 */
 
-PCRE_DATA_SCOPE int
+PCRE_EXP_DEFN int
 pcre_dfa_exec(const pcre *argument_re, const pcre_extra *extra_data,
   const char *subject, int length, int start_offset, int options, int *offsets,
   int offsetcount, int *workspace, int wscount)
@@ -2163,10 +2170,10 @@ md->end_subject = end_subject;
 md->moptions = options;
 md->poptions = re->options;
 
-/* Handle different types of newline. The two bits give four cases. If nothing
-is set at run time, whatever was used at compile time applies. */
+/* Handle different types of newline. The three bits give eight cases. If
+nothing is set at run time, whatever was used at compile time applies. */
 
-switch ((((options & PCRE_NEWLINE_BITS) == 0)? re->options : options) &
+switch ((((options & PCRE_NEWLINE_BITS) == 0)? re->options : (pcre_uint32)options) &
          PCRE_NEWLINE_BITS)
   {
   case 0: newline = NEWLINE; break;   /* Compile-time default */
@@ -2175,10 +2182,15 @@ switch ((((options & PCRE_NEWLINE_BITS) == 0)? re->options : options) &
   case PCRE_NEWLINE_CR+
        PCRE_NEWLINE_LF: newline = ('\r' << 8) | '\n'; break;
   case PCRE_NEWLINE_ANY: newline = -1; break;
+  case PCRE_NEWLINE_ANYCRLF: newline = -2; break;
   default: return PCRE_ERROR_BADNEWLINE;
   }
 
-if (newline < 0)
+if (newline == -2)
+  {
+  md->nltype = NLTYPE_ANYCRLF;
+  }
+else if (newline < 0)
   {
   md->nltype = NLTYPE_ANY;
   }
@@ -2308,6 +2320,16 @@ for (;;)
         {
         while (current_subject <= end_subject && !WAS_NEWLINE(current_subject))
           current_subject++;
+
+        /* If we have just passed a CR and the newline option is ANY or
+        ANYCRLF, and we are now at a LF, advance the match position by one more
+        character. */
+
+        if (current_subject[-1] == '\r' &&
+             (md->nltype == NLTYPE_ANY || md->nltype == NLTYPE_ANYCRLF) &&
+             current_subject < end_subject &&
+             *current_subject == '\n')
+          current_subject++;
         }
       }
 
@@ -2416,11 +2438,14 @@ for (;;)
     }
   if (current_subject > end_subject) break;
 
-  /* If we have just passed a CR and the newline option is CRLF or ANY, and we
-  are now at a LF, advance the match position by one more character. */
+  /* If we have just passed a CR and the newline option is CRLF or ANY or
+  ANYCRLF, and we are now at a LF, advance the match position by one more
+  character. */
 
   if (current_subject[-1] == '\r' &&
-       (md->nltype == NLTYPE_ANY || md->nllen == 2) &&
+       (md->nltype == NLTYPE_ANY ||
+        md->nltype == NLTYPE_ANYCRLF ||
+        md->nllen == 2) &&
        current_subject < end_subject &&
        *current_subject == '\n')
     current_subject++;

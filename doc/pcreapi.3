@@ -7,14 +7,12 @@ PCRE - Perl-compatible regular expressions
 .B #include <pcre.h>
 .PP
 .SM
-.br
 .B pcre *pcre_compile(const char *\fIpattern\fP, int \fIoptions\fP,
 .ti +5n
 .B const char **\fIerrptr\fP, int *\fIerroffset\fP,
 .ti +5n
 .B const unsigned char *\fItableptr\fP);
 .PP
-.br
 .B pcre *pcre_compile2(const char *\fIpattern\fP, int \fIoptions\fP,
 .ti +5n
 .B int *\fIerrorcodeptr\fP,
@@ -23,19 +21,16 @@ PCRE - Perl-compatible regular expressions
 .ti +5n
 .B const unsigned char *\fItableptr\fP);
 .PP
-.br
 .B pcre_extra *pcre_study(const pcre *\fIcode\fP, int \fIoptions\fP,
 .ti +5n
 .B const char **\fIerrptr\fP);
 .PP
-.br
 .B int pcre_exec(const pcre *\fIcode\fP, "const pcre_extra *\fIextra\fP,"
 .ti +5n
 .B "const char *\fIsubject\fP," int \fIlength\fP, int \fIstartoffset\fP,
 .ti +5n
 .B int \fIoptions\fP, int *\fIovector\fP, int \fIovecsize\fP);
 .PP
-.br
 .B int pcre_dfa_exec(const pcre *\fIcode\fP, "const pcre_extra *\fIextra\fP,"
 .ti +5n
 .B "const char *\fIsubject\fP," int \fIlength\fP, int \fIstartoffset\fP,
@@ -44,7 +39,6 @@ PCRE - Perl-compatible regular expressions
 .ti +5n
 .B int *\fIworkspace\fP, int \fIwscount\fP);
 .PP
-.br
 .B int pcre_copy_named_substring(const pcre *\fIcode\fP,
 .ti +5n
 .B const char *\fIsubject\fP, int *\fIovector\fP,
@@ -53,14 +47,12 @@ PCRE - Perl-compatible regular expressions
 .ti +5n
 .B char *\fIbuffer\fP, int \fIbuffersize\fP);
 .PP
-.br
 .B int pcre_copy_substring(const char *\fIsubject\fP, int *\fIovector\fP,
 .ti +5n
 .B int \fIstringcount\fP, int \fIstringnumber\fP, char *\fIbuffer\fP,
 .ti +5n
 .B int \fIbuffersize\fP);
 .PP
-.br
 .B int pcre_get_named_substring(const pcre *\fIcode\fP,
 .ti +5n
 .B const char *\fIsubject\fP, int *\fIovector\fP,
@@ -69,68 +61,51 @@ PCRE - Perl-compatible regular expressions
 .ti +5n
 .B const char **\fIstringptr\fP);
 .PP
-.br
 .B int pcre_get_stringnumber(const pcre *\fIcode\fP,
 .ti +5n
 .B const char *\fIname\fP);
 .PP
-.br
 .B int pcre_get_stringtable_entries(const pcre *\fIcode\fP,
 .ti +5n
 .B const char *\fIname\fP, char **\fIfirst\fP, char **\fIlast\fP);
 .PP
-.br
 .B int pcre_get_substring(const char *\fIsubject\fP, int *\fIovector\fP,
 .ti +5n
 .B int \fIstringcount\fP, int \fIstringnumber\fP,
 .ti +5n
 .B const char **\fIstringptr\fP);
 .PP
-.br
 .B int pcre_get_substring_list(const char *\fIsubject\fP,
 .ti +5n
 .B int *\fIovector\fP, int \fIstringcount\fP, "const char ***\fIlistptr\fP);"
 .PP
-.br
 .B void pcre_free_substring(const char *\fIstringptr\fP);
 .PP
-.br
 .B void pcre_free_substring_list(const char **\fIstringptr\fP);
 .PP
-.br
 .B const unsigned char *pcre_maketables(void);
 .PP
-.br
 .B int pcre_fullinfo(const pcre *\fIcode\fP, "const pcre_extra *\fIextra\fP,"
 .ti +5n
 .B int \fIwhat\fP, void *\fIwhere\fP);
 .PP
-.br
 .B int pcre_info(const pcre *\fIcode\fP, int *\fIoptptr\fP, int
 .B *\fIfirstcharptr\fP);
 .PP
-.br
 .B int pcre_refcount(pcre *\fIcode\fP, int \fIadjust\fP);
 .PP
-.br
 .B int pcre_config(int \fIwhat\fP, void *\fIwhere\fP);
 .PP
-.br
 .B char *pcre_version(void);
 .PP
-.br
 .B void *(*pcre_malloc)(size_t);
 .PP
-.br
 .B void (*pcre_free)(void *);
 .PP
-.br
 .B void *(*pcre_stack_malloc)(size_t);
 .PP
-.br
 .B void (*pcre_stack_free)(void *);
 .PP
-.br
 .B int (*pcre_callout)(pcre_callout_block *);
 .
 .
@@ -246,12 +221,13 @@ documentation.
 .SH NEWLINES
 .rs
 .sp
-PCRE supports four different conventions for indicating line breaks in
+PCRE supports five different conventions for indicating line breaks in
 strings: a single CR (carriage return) character, a single LF (linefeed)
-character, the two-character sequence CRLF, or any Unicode newline sequence.
-The Unicode newline sequences are the three just mentioned, plus the single
-characters VT (vertical tab, U+000B), FF (formfeed, U+000C), NEL (next line,
-U+0085), LS (line separator, U+2028), and PS (paragraph separator, U+2029).
+character, the two-character sequence CRLF, any of the three preceding, or any
+Unicode newline sequence. The Unicode newline sequences are the three just
+mentioned, plus the single characters VT (vertical tab, U+000B), FF (formfeed,
+U+000C), NEL (next line, U+0085), LS (line separator, U+2028), and PS
+(paragraph separator, U+2029).
 .P
 Each of the first three conventions is used by at least one operating system as
 its standard newline sequence. When PCRE is built, a default can be specified.
@@ -289,7 +265,9 @@ which it was compiled. Details are given in the
 .\" HREF
 \fBpcreprecompile\fP
 .\"
-documentation.
+documentation. However, compiling a regular expression with one version of PCRE
+for use with a different version is not guaranteed to work and may cause
+crashes.
 .
 .
 .SH "CHECKING BUILD-TIME OPTIONS"
@@ -322,8 +300,8 @@ properties is available; otherwise it is set to zero.
 .sp
 The output is an integer whose value specifies the default character sequence
 that is recognized as meaning "newline". The four values that are supported
-are: 10 for LF, 13 for CR, 3338 for CRLF, and -1 for ANY. The default should
-normally be the standard sequence for your operating system.
+are: 10 for LF, 13 for CR, 3338 for CRLF, -2 for ANYCRLF, and -1 for ANY. The
+default should normally be the standard sequence for your operating system.
 .sp
   PCRE_CONFIG_LINK_SIZE
 .sp
@@ -557,24 +535,27 @@ occurrences of ^ or $ in a pattern, setting PCRE_MULTILINE has no effect.
   PCRE_NEWLINE_CR
   PCRE_NEWLINE_LF
   PCRE_NEWLINE_CRLF
+  PCRE_NEWLINE_ANYCRLF
   PCRE_NEWLINE_ANY
 .sp
 These options override the default newline definition that was chosen when PCRE
 was built. Setting the first or the second specifies that a newline is
 indicated by a single character (CR or LF, respectively). Setting
 PCRE_NEWLINE_CRLF specifies that a newline is indicated by the two-character
-CRLF sequence. Setting PCRE_NEWLINE_ANY specifies that any Unicode newline
-sequence should be recognized. The Unicode newline sequences are the three just
-mentioned, plus the single characters VT (vertical tab, U+000B), FF (formfeed,
-U+000C), NEL (next line, U+0085), LS (line separator, U+2028), and PS
-(paragraph separator, U+2029). The last two are recognized only in UTF-8 mode.
+CRLF sequence. Setting PCRE_NEWLINE_ANYCRLF specifies that any of the three
+preceding sequences should be recognized. Setting PCRE_NEWLINE_ANY specifies
+that any Unicode newline sequence should be recognized. The Unicode newline
+sequences are the three just mentioned, plus the single characters VT (vertical
+tab, U+000B), FF (formfeed, U+000C), NEL (next line, U+0085), LS (line
+separator, U+2028), and PS (paragraph separator, U+2029). The last two are
+recognized only in UTF-8 mode.
 .P
 The newline setting in the options word uses three bits that are treated
-as a number, giving eight possibilities. Currently only five are used (default
-plus the four values above). This means that if you set more than one newline
+as a number, giving eight possibilities. Currently only six are used (default
+plus the five values above). This means that if you set more than one newline
 option, the combination may or may not be sensible. For example,
 PCRE_NEWLINE_CR with PCRE_NEWLINE_LF is equivalent to PCRE_NEWLINE_CRLF, but
-other combinations yield unused numbers and cause an error.
+other combinations may yield unused numbers and cause an error.
 .P
 The only time that a line break is specially recognized when compiling a
 pattern is if PCRE_EXTENDED is set, and an unescaped # outside a character
@@ -754,19 +735,25 @@ bytes is created.
 .SH "LOCALE SUPPORT"
 .rs
 .sp
-PCRE handles caseless matching, and determines whether characters are letters
+PCRE handles caseless matching, and determines whether characters are letters,
 digits, or whatever, by reference to a set of tables, indexed by character
 value. When running in UTF-8 mode, this applies only to characters with codes
 less than 128. Higher-valued codes never match escapes such as \ew or \ed, but
 can be tested with \ep if PCRE is built with Unicode character property
-support. The use of locales with Unicode is discouraged.
+support. The use of locales with Unicode is discouraged. If you are handling
+characters with codes greater than 128, you should either use UTF-8 and
+Unicode, or use locales, but not try to mix the two.
 .P
-An internal set of tables is created in the default C locale when PCRE is
-built. This is used when the final argument of \fBpcre_compile()\fP is NULL,
-and is sufficient for many applications. An alternative set of tables can,
-however, be supplied. These may be created in a different locale from the
-default. As more and more applications change to using Unicode, the need for
-this locale support is expected to die away.
+PCRE contains an internal set of tables that are used when the final argument
+of \fBpcre_compile()\fP is NULL. These are sufficient for many applications.
+Normally, the internal tables recognize only ASCII characters. However, when
+PCRE is built, it is possible to cause the internal tables to be rebuilt in the
+default "C" locale of the local system, which may cause them to be different.
+.P
+The internal tables can always be overridden by tables supplied by the
+application that calls PCRE. These may be created in a different locale from
+the default. As more and more applications change to using Unicode, the need
+for this locale support is expected to die away.
 .P
 External tables are built by calling the \fBpcre_maketables()\fP function,
 which has no arguments, in the relevant locale. The result can then be passed
@@ -779,6 +766,9 @@ the following code could be used:
   tables = pcre_maketables();
   re = pcre_compile(..., tables);
 .sp
+The locale name "fr_FR" is used on Linux and other Unix-like systems; if you
+are using Windows, the name for the French locale is "french".
+.P
 When \fBpcre_maketables()\fP runs, the tables are built in memory that is
 obtained via \fBpcre_malloc\fP. It is the caller's responsibility to ensure
 that the memory containing the tables remains available for as long as it is
@@ -1166,6 +1156,7 @@ matching time.
   PCRE_NEWLINE_CR
   PCRE_NEWLINE_LF
   PCRE_NEWLINE_CRLF
+  PCRE_NEWLINE_ANYCRLF
   PCRE_NEWLINE_ANY
 .sp
 These options override the newline definition that was chosen or defaulted when
@@ -1173,9 +1164,10 @@ the pattern was compiled. For details, see the description of
 \fBpcre_compile()\fP above. During matching, the newline choice affects the
 behaviour of the dot, circumflex, and dollar metacharacters. It may also alter
 the way the match position is advanced after a match failure for an unanchored
-pattern. When PCRE_NEWLINE_CRLF or PCRE_NEWLINE_ANY is set, and a match attempt
-fails when the current position is at a CRLF sequence, the match position is
-advanced by two characters instead of one, in other words, to after the CRLF.
+pattern. When PCRE_NEWLINE_CRLF, PCRE_NEWLINE_ANYCRLF, or PCRE_NEWLINE_ANY is
+set, and a match attempt fails when the current position is at a CRLF sequence,
+the match position is advanced by two characters instead of one, in other
+words, to after the CRLF.
 .sp
   PCRE_NOTBOL
 .sp
@@ -1476,14 +1468,12 @@ Error numbers -16 to -20 are not used by \fBpcre_exec()\fP.
 .ti +5n
 .B int \fIbuffersize\fP);
 .PP
-.br
 .B int pcre_get_substring(const char *\fIsubject\fP, int *\fIovector\fP,
 .ti +5n
 .B int \fIstringcount\fP, int \fIstringnumber\fP,
 .ti +5n
 .B const char **\fIstringptr\fP);
 .PP
-.br
 .B int pcre_get_substring_list(const char *\fIsubject\fP,
 .ti +5n
 .B int *\fIovector\fP, int \fIstringcount\fP, "const char ***\fIlistptr\fP);"
@@ -1569,7 +1559,6 @@ provided.
 .ti +5n
 .B const char *\fIname\fP);
 .PP
-.br
 .B int pcre_copy_named_substring(const pcre *\fIcode\fP,
 .ti +5n
 .B const char *\fIsubject\fP, int *\fIovector\fP,
@@ -1578,7 +1567,6 @@ provided.
 .ti +5n
 .B char *\fIbuffer\fP, int \fIbuffersize\fP);
 .PP
-.br
 .B int pcre_get_named_substring(const pcre *\fIcode\fP,
 .ti +5n
 .B const char *\fIsubject\fP, int *\fIovector\fP,
@@ -1614,8 +1602,9 @@ pattern. This is needed in order to gain access to the name-to-number
 translation table.
 .P
 These functions call \fBpcre_get_stringnumber()\fP, and if it succeeds, they
-then call \fIpcre_copy_substring()\fP or \fIpcre_get_substring()\fP, as
-appropriate.
+then call \fBpcre_copy_substring()\fP or \fBpcre_get_substring()\fP, as
+appropriate. \fBNOTE:\fP If PCRE_DUPNAMES is set and there are duplicate names,
+the behaviour may not be what you want (see the next section).
 .
 .
 .SH "DUPLICATE SUBPATTERN NAMES"
@@ -1846,8 +1835,22 @@ extremely rare, as a vector of size 1000 is used.
 \fBpcrebuild\fP(3), \fBpcrecallout\fP(3), \fBpcrecpp(3)\fP(3),
 \fBpcrematching\fP(3), \fBpcrepartial\fP(3), \fBpcreposix\fP(3),
 \fBpcreprecompile\fP(3), \fBpcresample\fP(3), \fBpcrestack\fP(3).
-.P
-.in 0
-Last updated: 30 November 2006
-.br
-Copyright (c) 1997-2006 University of Cambridge.
+.
+.
+.SH AUTHOR
+.rs
+.sp
+.nf
+Philip Hazel
+University Computing Service
+Cambridge CB2 3QH, England.
+.fi
+.
+.
+.SH REVISION
+.rs
+.sp
+.nf
+Last updated: 24 April 2007
+Copyright (c) 1997-2007 University of Cambridge.
+.fi

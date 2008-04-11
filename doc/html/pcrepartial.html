@@ -17,6 +17,8 @@ man page, in case the conversion went wrong.
 <li><a name="TOC2" href="#SEC2">RESTRICTED PATTERNS FOR PCRE_PARTIAL</a>
 <li><a name="TOC3" href="#SEC3">EXAMPLE OF PARTIAL MATCHING USING PCRETEST</a>
 <li><a name="TOC4" href="#SEC4">MULTI-SEGMENT MATCHING WITH pcre_dfa_exec()</a>
+<li><a name="TOC5" href="#SEC5">AUTHOR</a>
+<li><a name="TOC6" href="#SEC6">REVISION</a>
 </ul>
 <br><a name="SEC1" href="#TOC1">PARTIAL MATCHING IN PCRE</a><br>
 <P>
@@ -176,7 +178,7 @@ bytes at the start of the buffer.
 always produce exactly the same result as matching over one single long string.
 The difference arises when there are multiple matching possibilities, because a
 partial match result is given only when there are no completed matches in a
-call to fBpcre_dfa_exec()\fP. This means that as soon as the shortest match has
+call to <b>pcre_dfa_exec()</b>. This means that as soon as the shortest match has
 been found, continuation to a new subject segment is no longer possible.
 Consider this <b>pcretest</b> example:
 <pre>
@@ -218,10 +220,21 @@ patterns or patterns such as:
 </pre>
 where no string can be a partial match for both alternatives.
 </P>
+<br><a name="SEC5" href="#TOC1">AUTHOR</a><br>
 <P>
-Last updated: 30 November 2006
+Philip Hazel
 <br>
-Copyright &copy; 1997-2006 University of Cambridge.
+University Computing Service
+<br>
+Cambridge CB2 3QH, England.
+<br>
+</P>
+<br><a name="SEC6" href="#TOC1">REVISION</a><br>
+<P>
+Last updated: 06 March 2007
+<br>
+Copyright &copy; 1997-2007 University of Cambridge.
+<br>
 <p>
 Return to the <a href="index.html">PCRE index page</a>.
 </p>

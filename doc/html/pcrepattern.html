@@ -35,6 +35,8 @@ man page, in case the conversion went wrong.
 <li><a name="TOC20" href="#SEC20">SUBPATTERNS AS SUBROUTINES</a>
 <li><a name="TOC21" href="#SEC21">CALLOUTS</a>
 <li><a name="TOC22" href="#SEC22">SEE ALSO</a>
+<li><a name="TOC23" href="#SEC23">AUTHOR</a>
+<li><a name="TOC24" href="#SEC24">REVISION</a>
 </ul>
 <br><a name="SEC1" href="#TOC1">PCRE REGULAR EXPRESSION DETAILS</a><br>
 <P>
@@ -295,8 +297,9 @@ place (see
 <a href="pcreapi.html#localesupport">"Locale support"</a>
 in the
 <a href="pcreapi.html"><b>pcreapi</b></a>
-page). For example, in the "fr_FR" (French) locale, some character codes
-greater than 128 are used for accented letters, and these are matched by \w.
+page). For example, in a French locale such as "fr_FR" in Unix-like systems,
+or "french" in Windows, some character codes greater than 128 are used for
+accented letters, and these are matched by \w.
 </P>
 <P>
 In UTF-8 mode, characters with values greater than 128 never match \d, \s, or
@@ -754,7 +757,7 @@ example [\x{100}-\x{2ff}].
 If a range that includes letters is used when caseless matching is set, it
 matches the letters in either case. For example, [W-c] is equivalent to
 [][\\^_`wxyzabc], matched caselessly, and in non-UTF-8 mode, if character
-tables for the "fr_FR" locale are in use, [\xc8-\xcb] matches accented E
+tables for a French locale are in use, [\xc8-\xcb] matches accented E
 characters in both cases. In UTF-8 mode, PCRE supports the concept of case for
 characters with values greater than 128 only when it is compiled with Unicode
 property support.
@@ -1802,7 +1805,7 @@ function is to be called. If you want to identify different callout points, you
 can put a number less than 256 after the letter C. The default value is zero.
 For example, this pattern has two callout points:
 <pre>
-  (?C1)\dabc(?C2)def
+  (?C1)abc(?C2)def
 </pre>
 If the PCRE_AUTO_CALLOUT flag is passed to <b>pcre_compile()</b>, callouts are
 automatically installed before each item in the pattern. They are all numbered
@@ -1822,10 +1825,21 @@ documentation.
 <P>
 <b>pcreapi</b>(3), <b>pcrecallout</b>(3), <b>pcrematching</b>(3), <b>pcre</b>(3).
 </P>
+<br><a name="SEC23" href="#TOC1">AUTHOR</a><br>
 <P>
-Last updated: 06 December 2006
+Philip Hazel
 <br>
-Copyright &copy; 1997-2006 University of Cambridge.
+University Computing Service
+<br>
+Cambridge CB2 3QH, England.
+<br>
+</P>
+<br><a name="SEC24" href="#TOC1">REVISION</a><br>
+<P>
+Last updated: 06 March 2007
+<br>
+Copyright &copy; 1997-2007 University of Cambridge.
+<br>
 <p>
 Return to the <a href="index.html">PCRE index page</a>.
 </p>

@@ -41,8 +41,8 @@ correspond to the two matching algorithms provided by PCRE.
 .SH "THE STANDARD MATCHING ALGORITHM"
 .rs
 .sp
-In the terminology of Jeffrey Friedl's book \fIMastering Regular
-Expressions\fP, the standard algorithm is an "NFA algorithm". It conducts a
+In the terminology of Jeffrey Friedl's book "Mastering Regular
+Expressions", the standard algorithm is an "NFA algorithm". It conducts a
 depth-first search of the pattern tree. That is, it proceeds along a single
 path through the tree, checking that the subject matches what is required. When
 there is a mismatch, the algorithm tries any alternatives at the current point,
@@ -161,8 +161,22 @@ less susceptible to optimization.
 .P
 3. Although atomic groups are supported, their use does not provide the
 performance advantage that it does for the standard algorithm.
-.P
-.in 0
-Last updated: 24 November 2006
-.br
-Copyright (c) 1997-2006 University of Cambridge.
+.
+.
+.SH AUTHOR
+.rs
+.sp
+.nf
+Philip Hazel
+University Computing Service
+Cambridge CB2 3QH, England.
+.fi
+.
+.
+.SH REVISION
+.rs
+.sp
+.nf
+Last updated: 06 March 2007
+Copyright (c) 1997-2007 University of Cambridge.
+.fi

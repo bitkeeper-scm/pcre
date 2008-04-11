@@ -33,6 +33,8 @@ man page, in case the conversion went wrong.
 <li><a name="TOC18" href="#SEC18">FINDING ALL POSSIBLE MATCHES</a>
 <li><a name="TOC19" href="#SEC19">MATCHING A PATTERN: THE ALTERNATIVE FUNCTION</a>
 <li><a name="TOC20" href="#SEC20">SEE ALSO</a>
+<li><a name="TOC21" href="#SEC21">AUTHOR</a>
+<li><a name="TOC22" href="#SEC22">REVISION</a>
 </ul>
 <br><a name="SEC1" href="#TOC1">PCRE NATIVE API</a><br>
 <P>
@@ -244,12 +246,13 @@ documentation.
 </P>
 <br><a name="SEC3" href="#TOC1">NEWLINES</a><br>
 <P>
-PCRE supports four different conventions for indicating line breaks in
+PCRE supports five different conventions for indicating line breaks in
 strings: a single CR (carriage return) character, a single LF (linefeed)
-character, the two-character sequence CRLF, or any Unicode newline sequence.
-The Unicode newline sequences are the three just mentioned, plus the single
-characters VT (vertical tab, U+000B), FF (formfeed, U+000C), NEL (next line,
-U+0085), LS (line separator, U+2028), and PS (paragraph separator, U+2029).
+character, the two-character sequence CRLF, any of the three preceding, or any
+Unicode newline sequence. The Unicode newline sequences are the three just
+mentioned, plus the single characters VT (vertical tab, U+000B), FF (formfeed,
+U+000C), NEL (next line, U+0085), LS (line separator, U+2028), and PS
+(paragraph separator, U+2029).
 </P>
 <P>
 Each of the first three conventions is used by at least one operating system as
@@ -284,7 +287,9 @@ The compiled form of a regular expression can be saved and re-used at a later
 time, possibly by a different program, and even on a host other than the one on
 which it was compiled. Details are given in the
 <a href="pcreprecompile.html"><b>pcreprecompile</b></a>
-documentation.
+documentation. However, compiling a regular expression with one version of PCRE
+for use with a different version is not guaranteed to work and may cause
+crashes.
 </P>
 <br><a name="SEC6" href="#TOC1">CHECKING BUILD-TIME OPTIONS</a><br>
 <P>
@@ -315,8 +320,8 @@ properties is available; otherwise it is set to zero.
 </pre>
 The output is an integer whose value specifies the default character sequence
 that is recognized as meaning "newline". The four values that are supported
-are: 10 for LF, 13 for CR, 3338 for CRLF, and -1 for ANY. The default should
-normally be the standard sequence for your operating system.
+are: 10 for LF, 13 for CR, 3338 for CRLF, -2 for ANYCRLF, and -1 for ANY. The
+default should normally be the standard sequence for your operating system.
 <pre>
   PCRE_CONFIG_LINK_SIZE
 </pre>
@@ -544,25 +549,28 @@ occurrences of ^ or $ in a pattern, setting PCRE_MULTILINE has no effect.
   PCRE_NEWLINE_CR
   PCRE_NEWLINE_LF
   PCRE_NEWLINE_CRLF
+  PCRE_NEWLINE_ANYCRLF
   PCRE_NEWLINE_ANY
 </pre>
 These options override the default newline definition that was chosen when PCRE
 was built. Setting the first or the second specifies that a newline is
 indicated by a single character (CR or LF, respectively). Setting
 PCRE_NEWLINE_CRLF specifies that a newline is indicated by the two-character
-CRLF sequence. Setting PCRE_NEWLINE_ANY specifies that any Unicode newline
-sequence should be recognized. The Unicode newline sequences are the three just
-mentioned, plus the single characters VT (vertical tab, U+000B), FF (formfeed,
-U+000C), NEL (next line, U+0085), LS (line separator, U+2028), and PS
-(paragraph separator, U+2029). The last two are recognized only in UTF-8 mode.
+CRLF sequence. Setting PCRE_NEWLINE_ANYCRLF specifies that any of the three
+preceding sequences should be recognized. Setting PCRE_NEWLINE_ANY specifies
+that any Unicode newline sequence should be recognized. The Unicode newline
+sequences are the three just mentioned, plus the single characters VT (vertical
+tab, U+000B), FF (formfeed, U+000C), NEL (next line, U+0085), LS (line
+separator, U+2028), and PS (paragraph separator, U+2029). The last two are
+recognized only in UTF-8 mode.
 </P>
 <P>
 The newline setting in the options word uses three bits that are treated
-as a number, giving eight possibilities. Currently only five are used (default
-plus the four values above). This means that if you set more than one newline
+as a number, giving eight possibilities. Currently only six are used (default
+plus the five values above). This means that if you set more than one newline
 option, the combination may or may not be sensible. For example,
 PCRE_NEWLINE_CR with PCRE_NEWLINE_LF is equivalent to PCRE_NEWLINE_CRLF, but
-other combinations yield unused numbers and cause an error.
+other combinations may yield unused numbers and cause an error.
 </P>
 <P>
 The only time that a line break is specially recognized when compiling a
@@ -735,20 +743,27 @@ bytes is created.
 <a name="localesupport"></a></P>
 <br><a name="SEC10" href="#TOC1">LOCALE SUPPORT</a><br>
 <P>
-PCRE handles caseless matching, and determines whether characters are letters
+PCRE handles caseless matching, and determines whether characters are letters,
 digits, or whatever, by reference to a set of tables, indexed by character
 value. When running in UTF-8 mode, this applies only to characters with codes
 less than 128. Higher-valued codes never match escapes such as \w or \d, but
 can be tested with \p if PCRE is built with Unicode character property
-support. The use of locales with Unicode is discouraged.
+support. The use of locales with Unicode is discouraged. If you are handling
+characters with codes greater than 128, you should either use UTF-8 and
+Unicode, or use locales, but not try to mix the two.
 </P>
 <P>
-An internal set of tables is created in the default C locale when PCRE is
-built. This is used when the final argument of <b>pcre_compile()</b> is NULL,
-and is sufficient for many applications. An alternative set of tables can,
-however, be supplied. These may be created in a different locale from the
-default. As more and more applications change to using Unicode, the need for
-this locale support is expected to die away.
+PCRE contains an internal set of tables that are used when the final argument
+of <b>pcre_compile()</b> is NULL. These are sufficient for many applications.
+Normally, the internal tables recognize only ASCII characters. However, when
+PCRE is built, it is possible to cause the internal tables to be rebuilt in the
+default "C" locale of the local system, which may cause them to be different.
+</P>
+<P>
+The internal tables can always be overridden by tables supplied by the
+application that calls PCRE. These may be created in a different locale from
+the default. As more and more applications change to using Unicode, the need
+for this locale support is expected to die away.
 </P>
 <P>
 External tables are built by calling the <b>pcre_maketables()</b> function,
@@ -762,6 +777,10 @@ the following code could be used:
   tables = pcre_maketables();
   re = pcre_compile(..., tables);
 </pre>
+The locale name "fr_FR" is used on Linux and other Unix-like systems; if you
+are using Windows, the name for the French locale is "french".
+</P>
+<P>
 When <b>pcre_maketables()</b> runs, the tables are built in memory that is
 obtained via <b>pcre_malloc</b>. It is the caller's responsibility to ensure
 that the memory containing the tables remains available for as long as it is
@@ -1153,6 +1172,7 @@ matching time.
   PCRE_NEWLINE_CR
   PCRE_NEWLINE_LF
   PCRE_NEWLINE_CRLF
+  PCRE_NEWLINE_ANYCRLF
   PCRE_NEWLINE_ANY
 </pre>
 These options override the newline definition that was chosen or defaulted when
@@ -1160,9 +1180,10 @@ the pattern was compiled. For details, see the description of
 <b>pcre_compile()</b> above. During matching, the newline choice affects the
 behaviour of the dot, circumflex, and dollar metacharacters. It may also alter
 the way the match position is advanced after a match failure for an unanchored
-pattern. When PCRE_NEWLINE_CRLF or PCRE_NEWLINE_ANY is set, and a match attempt
-fails when the current position is at a CRLF sequence, the match position is
-advanced by two characters instead of one, in other words, to after the CRLF.
+pattern. When PCRE_NEWLINE_CRLF, PCRE_NEWLINE_ANYCRLF, or PCRE_NEWLINE_ANY is
+set, and a match attempt fails when the current position is at a CRLF sequence,
+the match position is advanced by two characters instead of one, in other
+words, to after the CRLF.
 <pre>
   PCRE_NOTBOL
 </pre>
@@ -1605,8 +1626,9 @@ translation table.
 </P>
 <P>
 These functions call <b>pcre_get_stringnumber()</b>, and if it succeeds, they
-then call <i>pcre_copy_substring()</i> or <i>pcre_get_substring()</i>, as
-appropriate.
+then call <b>pcre_copy_substring()</b> or <b>pcre_get_substring()</b>, as
+appropriate. <b>NOTE:</b> If PCRE_DUPNAMES is set and there are duplicate names,
+the behaviour may not be what you want (see the next section).
 </P>
 <br><a name="SEC17" href="#TOC1">DUPLICATE SUBPATTERN NAMES</a><br>
 <P>
@@ -1826,10 +1848,21 @@ extremely rare, as a vector of size 1000 is used.
 <b>pcrematching</b>(3), <b>pcrepartial</b>(3), <b>pcreposix</b>(3),
 <b>pcreprecompile</b>(3), <b>pcresample</b>(3), <b>pcrestack</b>(3).
 </P>
+<br><a name="SEC21" href="#TOC1">AUTHOR</a><br>
 <P>
-Last updated: 30 November 2006
+Philip Hazel
 <br>
-Copyright &copy; 1997-2006 University of Cambridge.
+University Computing Service
+<br>
+Cambridge CB2 3QH, England.
+<br>
+</P>
+<br><a name="SEC22" href="#TOC1">REVISION</a><br>
+<P>
+Last updated: 24 April 2007
+<br>
+Copyright &copy; 1997-2007 University of Cambridge.
+<br>
 <p>
 Return to the <a href="index.html">PCRE index page</a>.
 </p>

@@ -24,6 +24,7 @@ man page, in case the conversion went wrong.
 <li><a name="TOC9" href="#SEC9">DIAGNOSTICS</a>
 <li><a name="TOC10" href="#SEC10">SEE ALSO</a>
 <li><a name="TOC11" href="#SEC11">AUTHOR</a>
+<li><a name="TOC12" href="#SEC12">REVISION</a>
 </ul>
 <br><a name="SEC1" href="#TOC1">SYNOPSIS</a><br>
 <P>
@@ -269,23 +270,24 @@ are guaranteed to be available for lookbehind assertions.
 </P>
 <P>
 <b>-N</b> <i>newline-type</i>, <b>--newline=</b><i>newline-type</i>
-The PCRE library supports four different conventions for indicating
+The PCRE library supports five different conventions for indicating
 the ends of lines. They are the single-character sequences CR (carriage return)
-and LF (linefeed), the two-character sequence CRLF, and an "any" convention, in
+and LF (linefeed), the two-character sequence CRLF, an "anycrlf" convention,
+which recognizes any of the preceding three types, and an "any" convention, in
 which any Unicode line ending sequence is assumed to end a line. The Unicode
 sequences are the three just mentioned, plus VT (vertical tab, U+000B), FF
 (formfeed, U+000C), NEL (next line, U+0085), LS (line separator, U+2028), and
-PS (paragraph separator, U+0029).
+PS (paragraph separator, U+2029).
 <br>
 <br>
 When the PCRE library is built, a default line-ending sequence is specified.
 This is normally the standard sequence for the operating system. Unless
 otherwise specified by this option, <b>pcregrep</b> uses the library's default.
-The possible values for this option are CR, LF, CRLF, or ANY. This makes it
-possible to use <b>pcregrep</b> on files that have come from other environments
-without having to modify their line endings. If the data that is being scanned
-does not agree with the convention set by this option, <b>pcregrep</b> may
-behave in strange ways.
+The possible values for this option are CR, LF, CRLF, ANYCRLF, or ANY. This
+makes it possible to use <b>pcregrep</b> on files that have come from other
+environments without having to modify their line endings. If the data that is
+being scanned does not agree with the convention set by this option,
+<b>pcregrep</b> may behave in strange ways.
 </P>
 <P>
 <b>-n</b>, <b>--line-number</b>
@@ -340,7 +342,7 @@ Force the patterns to match only whole words. This is equivalent to having \b
 at the start and end of the pattern.
 </P>
 <P>
-<b>-x</b>, <b>--line-regex</b>, \fP--line-regexp\fP
+<b>-x</b>, <b>--line-regex</b>, <b>--line-regexp</b>
 Force the patterns to be anchored (each must start matching at the beginning of
 a line) and in addition, require them to match entire lines. This is
 equivalent to having ^ and $ characters at the start and end of each
@@ -426,11 +428,14 @@ Philip Hazel
 University Computing Service
 <br>
 Cambridge CB2 3QH, England.
-</P>
-<P>
-Last updated: 29 November 2006
 <br>
-Copyright &copy; 1997-2006 University of Cambridge.
+</P>
+<br><a name="SEC12" href="#TOC1">REVISION</a><br>
+<P>
+Last updated: 16 April 2007
+<br>
+Copyright &copy; 1997-2007 University of Cambridge.
+<br>
 <p>
 Return to the <a href="index.html">PCRE index page</a>.
 </p>
