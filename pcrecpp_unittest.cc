@@ -33,10 +33,13 @@
 //
 // TODO: Test extractions for PartialMatch/Consume
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include <stdio.h>
 #include <cassert>
 #include <vector>
-#include "config.h"
 #include "pcrecpp.h"
 
 using pcrecpp::StringPiece;
@@ -905,6 +908,13 @@ int main(int argc, char** argv) {
     CHECK(!RE("(\\d+)").FullMatch("4294967296", &v));
   }
 #ifdef HAVE_LONG_LONG
+# if defined(__MINGW__) || defined(__MINGW32__)
+#   define LLD "%I64d"
+#   define LLU "%I64u"
+# else
+#   define LLD "%lld"
+#   define LLU "%llu"
+# endif
   {
     long long v;
     static const long long max_value = 0x7fffffffffffffffLL;
@@ -914,18 +924,18 @@ int main(int argc, char** argv) {
     CHECK(RE("(-?\\d+)").FullMatch("100", &v)); CHECK_EQ(v, 100);
     CHECK(RE("(-?\\d+)").FullMatch("-100",&v)); CHECK_EQ(v, -100);
 
-    snprintf(buf, sizeof(buf), "%lld", max_value);
+    snprintf(buf, sizeof(buf), LLD, max_value);
     CHECK(RE("(-?\\d+)").FullMatch(buf,&v)); CHECK_EQ(v, max_value);
 
-    snprintf(buf, sizeof(buf), "%lld", min_value);
+    snprintf(buf, sizeof(buf), LLD, min_value);
     CHECK(RE("(-?\\d+)").FullMatch(buf,&v)); CHECK_EQ(v, min_value);
 
-    snprintf(buf, sizeof(buf), "%lld", max_value);
+    snprintf(buf, sizeof(buf), LLD, max_value);
     assert(buf[strlen(buf)-1] != '9');
     buf[strlen(buf)-1]++;
     CHECK(!RE("(-?\\d+)").FullMatch(buf, &v));
 
-    snprintf(buf, sizeof(buf), "%lld", min_value);
+    snprintf(buf, sizeof(buf), LLD, min_value);
     assert(buf[strlen(buf)-1] != '9');
     buf[strlen(buf)-1]++;
     CHECK(!RE("(-?\\d+)").FullMatch(buf, &v));
@@ -941,7 +951,7 @@ int main(int argc, char** argv) {
     CHECK(RE("(-?\\d+)").FullMatch("100",&v)); CHECK_EQ(v, 100);
     CHECK(RE("(-?\\d+)").FullMatch("-100",&v2)); CHECK_EQ(v2, -100);
 
-    snprintf(buf, sizeof(buf), "%llu", max_value);
+    snprintf(buf, sizeof(buf), LLU, max_value);
     CHECK(RE("(-?\\d+)").FullMatch(buf,&v)); CHECK_EQ(v, max_value);
 
     assert(buf[strlen(buf)-1] != '9');

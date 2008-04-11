@@ -44,6 +44,10 @@ FSM). This is NOT Perl- compatible, but it has advantages in certain
 applications. */
 
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #define NLBLOCK md             /* Block containing newline information */
 #define PSSTART start_subject  /* Field containing processed string start */
 #define PSEND   end_subject    /* Field containing processed string end */
@@ -126,7 +130,9 @@ static uschar coptable[] = {
   0,                             /* CREF                                   */
   0,                             /* RREF                                   */
   0,                             /* DEF                                    */
-  0, 0                           /* BRAZERO, BRAMINZERO                    */
+  0, 0,                          /* BRAZERO, BRAMINZERO                    */
+  0, 0, 0, 0,                    /* PRUNE, SKIP, THEN, COMMIT              */
+  0, 0                           /* FAIL, ACCEPT                           */
 };
 
 /* These 2 tables allow for compact code for testing for \D, \d, \S, \s, \W,
@@ -2836,16 +2842,17 @@ for (;;)
     }
   if (current_subject > end_subject) break;
 
-  /* If we have just passed a CR and the newline option is CRLF or ANY or
-  ANYCRLF, and we are now at a LF, advance the match position by one more
-  character. */
+  /* If we have just passed a CR and we are now at a LF, and the pattern does
+  not contain any explicit matches for \r or \n, and the newline option is CRLF
+  or ANY or ANYCRLF, advance the match position by one more character. */
 
   if (current_subject[-1] == '\r' &&
-       (md->nltype == NLTYPE_ANY ||
-        md->nltype == NLTYPE_ANYCRLF ||
-        md->nllen == 2) &&
-       current_subject < end_subject &&
-       *current_subject == '\n')
+      current_subject < end_subject &&
+      *current_subject == '\n' &&
+      (re->options & PCRE_HASCRORLF) == 0 &&
+        (md->nltype == NLTYPE_ANY ||
+         md->nltype == NLTYPE_ANYCRLF ||
+         md->nllen == 2))
     current_subject++;
 
   }   /* "Bumpalong" loop */

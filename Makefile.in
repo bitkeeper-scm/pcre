@@ -110,8 +110,8 @@ libpcre_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(libpcre_la_LDFLAGS) $(LDFLAGS) -o $@
 @WITH_PCRE_CPP_TRUE@libpcrecpp_la_DEPENDENCIES = libpcre.la
-am__libpcrecpp_la_SOURCES_DIST = pcrecpp.cc pcre_scanner.cc \
-	pcre_stringpiece.cc
+am__libpcrecpp_la_SOURCES_DIST = pcrecpp_internal.h pcrecpp.cc \
+	pcre_scanner.cc pcre_stringpiece.cc
 @WITH_PCRE_CPP_TRUE@am_libpcrecpp_la_OBJECTS = pcrecpp.lo \
 @WITH_PCRE_CPP_TRUE@	pcre_scanner.lo pcre_stringpiece.lo
 libpcrecpp_la_OBJECTS = $(am_libpcrecpp_la_OBJECTS)
@@ -287,6 +287,7 @@ PCRE_MAJOR = @PCRE_MAJOR@
 PCRE_MINOR = @PCRE_MINOR@
 PCRE_PRERELEASE = @PCRE_PRERELEASE@
 RANLIB = @RANLIB@
+SED = @SED@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 STRIP = @STRIP@
@@ -432,16 +433,16 @@ EXTRA_DIST = doc/perltest.txt NON-UNIX-USE HACKING PrepareRelease \
 	makevp_c.txt makevp_l.txt pcregexp.pas pcre.h.generic \
 	config.h.generic pcre_printint.src pcre_chartables.c.dist \
 	RunTest.bat testdata/grepinput testdata/grepinput8 \
-	testdata/grepinputx testdata/greplist testdata/grepoutput \
-	testdata/grepoutput8 testdata/grepoutputN testdata/testinput1 \
-	testdata/testinput2 testdata/testinput3 testdata/testinput4 \
-	testdata/testinput5 testdata/testinput6 testdata/testinput7 \
-	testdata/testinput8 testdata/testinput9 testdata/testinput10 \
-	testdata/testoutput1 testdata/testoutput2 testdata/testoutput3 \
-	testdata/testoutput4 testdata/testoutput5 testdata/testoutput6 \
-	testdata/testoutput7 testdata/testoutput8 testdata/testoutput9 \
-	testdata/testoutput10 perltest.pl $(pcrecpp_man) \
-	CMakeLists.txt config-cmake.h.in
+	testdata/grepinputv testdata/grepinputx testdata/greplist \
+	testdata/grepoutput testdata/grepoutput8 testdata/grepoutputN \
+	testdata/testinput1 testdata/testinput2 testdata/testinput3 \
+	testdata/testinput4 testdata/testinput5 testdata/testinput6 \
+	testdata/testinput7 testdata/testinput8 testdata/testinput9 \
+	testdata/testinput10 testdata/testoutput1 testdata/testoutput2 \
+	testdata/testoutput3 testdata/testoutput4 testdata/testoutput5 \
+	testdata/testoutput6 testdata/testoutput7 testdata/testoutput8 \
+	testdata/testoutput9 testdata/testoutput10 perltest.pl \
+	$(pcrecpp_man) CMakeLists.txt config-cmake.h.in
 
 # These are the header files we'll install. We do not distribute pcre.h because
 # it is generated from pcre.h.in.
@@ -484,6 +485,7 @@ libpcreposix_la_SOURCES = \
 libpcreposix_la_LDFLAGS = $(EXTRA_LIBPCREPOSIX_LDFLAGS)
 libpcreposix_la_LIBADD = libpcre.la
 @WITH_PCRE_CPP_TRUE@libpcrecpp_la_SOURCES = \
+@WITH_PCRE_CPP_TRUE@  pcrecpp_internal.h \
 @WITH_PCRE_CPP_TRUE@  pcrecpp.cc \
 @WITH_PCRE_CPP_TRUE@  pcre_scanner.cc \
 @WITH_PCRE_CPP_TRUE@  pcre_stringpiece.cc

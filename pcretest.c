@@ -36,6 +36,10 @@ POSSIBILITY OF SUCH DAMAGE.
 */
 
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include <ctype.h>
 #include <stdio.h>
 #include <string.h>
@@ -152,6 +156,7 @@ static int callout_count;
 static int callout_extra;
 static int callout_fail_count;
 static int callout_fail_id;
+static int debug_lengths;
 static int first_callout;
 static int locale_set = 0;
 static int show_malloc;
@@ -659,6 +664,32 @@ return count;
 
 
 /*************************************************
+*         Case-independent strncmp() function    *
+*************************************************/
+
+/*
+Arguments:
+  s         first string
+  t         second string
+  n         number of characters to compare
+
+Returns:    < 0, = 0, or > 0, according to the comparison
+*/
+
+static int
+strncmpic(uschar *s, uschar *t, int n)
+{
+while (n--)
+  {
+  int c = tolower(*s++) - tolower(*t++);
+  if (c) return c;
+  }
+return 0;
+}
+
+
+
+/*************************************************
 *         Check newline indicator                *
 *************************************************/
 
@@ -676,11 +707,11 @@ Returns:      appropriate PCRE_NEWLINE_xxx flags, or 0
 static int
 check_newline(uschar *p, FILE *f)
 {
-if (strncmp((char *)p, "cr>", 3) == 0) return PCRE_NEWLINE_CR;
-if (strncmp((char *)p, "lf>", 3) == 0) return PCRE_NEWLINE_LF;
-if (strncmp((char *)p, "crlf>", 5) == 0) return PCRE_NEWLINE_CRLF;
-if (strncmp((char *)p, "anycrlf>", 8) == 0) return PCRE_NEWLINE_ANYCRLF;
-if (strncmp((char *)p, "any>", 4) == 0) return PCRE_NEWLINE_ANY;
+if (strncmpic(p, (uschar *)"cr>", 3) == 0) return PCRE_NEWLINE_CR;
+if (strncmpic(p, (uschar *)"lf>", 3) == 0) return PCRE_NEWLINE_LF;
+if (strncmpic(p, (uschar *)"crlf>", 5) == 0) return PCRE_NEWLINE_CRLF;
+if (strncmpic(p, (uschar *)"anycrlf>", 8) == 0) return PCRE_NEWLINE_ANYCRLF;
+if (strncmpic(p, (uschar *)"any>", 4) == 0) return PCRE_NEWLINE_ANY;
 fprintf(f, "Unknown newline type at: <%s\n", p);
 return 0;
 }
@@ -950,7 +981,6 @@ while (!done)
   size_t size, regex_gotten_store;
   int do_study = 0;
   int do_debug = debug;
-  int debug_lengths = 1;
   int do_G = 0;
   int do_g = 0;
   int do_showinfo = showinfo;
@@ -959,6 +989,7 @@ while (!done)
   int erroroffset, len, delimiter, poffset;
 
   use_utf8 = 0;
+  debug_lengths = 1;
 
   if (infile == stdin) printf("  re> ");
   if (extend_inputline(infile, buffer) == NULL) break;
@@ -1352,7 +1383,8 @@ while (!done)
 #if !defined NOINFOCHECK
       int old_first_char, old_options, old_count;
 #endif
-      int count, backrefmax, first_char, need_char, okpartial, jchanged;
+      int count, backrefmax, first_char, need_char, okpartial, jchanged,
+        hascrorlf;
       int nameentrysize, namecount;
       const uschar *nametable;
 
@@ -1367,6 +1399,7 @@ while (!done)
       new_info(re, NULL, PCRE_INFO_NAMETABLE, (void *)&nametable);
       new_info(re, NULL, PCRE_INFO_OKPARTIAL, &okpartial);
       new_info(re, NULL, PCRE_INFO_JCHANGED, &jchanged);
+      new_info(re, NULL, PCRE_INFO_HASCRORLF, &hascrorlf);
 
 #if !defined NOINFOCHECK
       old_count = pcre_info(re, &old_options, &old_first_char);
@@ -1409,6 +1442,7 @@ while (!done)
         }
 
       if (!okpartial) fprintf(outfile, "Partial matching not supported\n");
+      if (hascrorlf) fprintf(outfile, "Contains explicit CR or LF match\n");
 
       all_options = ((real_pcre *)re)->options;
       if (do_flip) all_options = byteflip(all_options, sizeof(all_options));

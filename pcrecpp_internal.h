@@ -1,13 +1,8 @@
 /*************************************************
-*      Perl-Compatible Regular Expressions       *
+*       Perl-Compatible Regular Expressions      *
 *************************************************/
 
-/* PCRE is a library of functions to support regular expressions whose syntax
-and semantics are as close as possible to those of the Perl 5 language.
-
-                       Written by Philip Hazel
-           Copyright (c) 1997-2007 University of Cambridge
-
+/*
 -----------------------------------------------------------------------------
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
@@ -38,26 +33,36 @@ POSSIBILITY OF SUCH DAMAGE.
 */
 
 
-/* This module contains global variables that are exported by the PCRE library.
-PCRE is thread-clean and doesn't use any global variables in the normal sense.
-However, it calls memory allocation and freeing functions via the four
-indirections below, and it can optionally do callouts, using the fifth
-indirection. These values can be changed by the caller, but are shared between
-all threads. However, when compiling for Virtual Pascal, things are done
-differently, and global variables are not used (see pcre.in). */
+#ifndef PCRECPP_INTERNAL_H
+#define PCRECPP_INTERNAL_H
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
+/* When compiling a DLL for Windows, the exported symbols have to be declared
+using some MS magic. I found some useful information on this web page:
+http://msdn2.microsoft.com/en-us/library/y4h7bcy6(VS.80).aspx. According to the
+information there, using __declspec(dllexport) without "extern" we have a
+definition; with "extern" we have a declaration. The settings here override the
+setting in pcre.h. We use:
+
+  PCRECPP_EXP_DECL       for declarations
+  PCRECPP_EXP_DEFN       for definitions of exported functions
+
+*/
+
+#ifndef PCRECPP_EXP_DECL
+#  ifdef _WIN32
+#    ifndef PCRECPP_STATIC
+#      define PCRECPP_EXP_DECL       extern __declspec(dllexport)
+#      define PCRECPP_EXP_DEFN       __declspec(dllexport)
+#    else
+#      define PCRECPP_EXP_DECL       extern
+#      define PCRECPP_EXP_DEFN
+#    endif
+#  else
+#    define PCRECPP_EXP_DECL         extern
+#    define PCRECPP_EXP_DEFN
+#  endif
 #endif
 
-#include "pcre_internal.h"
+#endif  /* PCRECPP_INTERNAL_H */
 
-#ifndef VPCOMPAT
-PCRE_EXP_DATA_DEFN void *(*pcre_malloc)(size_t) = malloc;
-PCRE_EXP_DATA_DEFN void  (*pcre_free)(void *) = free;
-PCRE_EXP_DATA_DEFN void *(*pcre_stack_malloc)(size_t) = malloc;
-PCRE_EXP_DATA_DEFN void  (*pcre_stack_free)(void *) = free;
-PCRE_EXP_DATA_DEFN int   (*pcre_callout)(pcre_callout_block *) = NULL;
-#endif
-
-/* End of pcre_globals.c */
+/* End of pcrecpp_internal.h */

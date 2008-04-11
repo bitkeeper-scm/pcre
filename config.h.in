@@ -120,11 +120,6 @@ them both to 0; an emulation function will be used. */
 /* This limit is parameterized just in case anybody ever wants to change it.
    Care must be taken if it is increased, because it guards against integer
    overflow caused by enormously large patterns. */
-#undef MAX_DUPLENGTH
-
-/* This limit is parameterized just in case anybody ever wants to change it.
-   Care must be taken if it is increased, because it guards against integer
-   overflow caused by enormously large patterns. */
 #undef MAX_NAME_COUNT
 
 /* This limit is parameterized just in case anybody ever wants to change it.

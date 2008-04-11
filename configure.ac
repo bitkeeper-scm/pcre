@@ -7,9 +7,9 @@ dnl be defined as -RC2, for example. For real releases, it should be defined
 dnl empty.
 
 m4_define(pcre_major, [7])
-m4_define(pcre_minor, [2])
+m4_define(pcre_minor, [3])
 m4_define(pcre_prerelease, [])
-m4_define(pcre_date, [2007-06-19])
+m4_define(pcre_date, [2007-08-28])
 
 # Libtool shared library interface versions (current:revision:age)
 m4_define(libpcre_version, [0:1:0])
@@ -139,7 +139,7 @@ enable_newline="$ac_pcre_newline"
 # Handle --enable-ebcdic
 AC_ARG_ENABLE(ebcdic,
               AS_HELP_STRING([--enable-ebcdic],
-                             [assume EBCDIC coding rather than ASCII (implies --enable-rebuild-chartables)]),
+                             [assume EBCDIC coding rather than ASCII; use this only in (uncommon) EBCDIC environments; it implies --enable-rebuild-chartables]),
               , enable_ebcdic=no)
 
 # Handle --disable-stack-for-recursion
@@ -372,11 +372,6 @@ AC_DEFINE([MAX_NAME_SIZE], [32], [
   against integer overflow caused by enormously large patterns.])
 
 AC_DEFINE([MAX_NAME_COUNT], [10000], [
-  This limit is parameterized just in case anybody ever wants to
-  change it. Care must be taken if it is increased, because it guards
-  against integer overflow caused by enormously large patterns.])
-
-AC_DEFINE([MAX_DUPLENGTH], [30000], [
   This limit is parameterized just in case anybody ever wants to
   change it. Care must be taken if it is increased, because it guards
   against integer overflow caused by enormously large patterns.])
