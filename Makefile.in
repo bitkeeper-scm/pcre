@@ -38,7 +38,7 @@ build_triplet = @build@
 host_triplet = @host@
 TESTS = $(am__EXEEXT_2) RunTest RunGrepTest
 bin_PROGRAMS = pcretest$(EXEEXT) pcregrep$(EXEEXT)
-noinst_PROGRAMS = $(am__EXEEXT_1) $(am__EXEEXT_2) pcredemo$(EXEEXT)
+noinst_PROGRAMS = $(am__EXEEXT_1) $(am__EXEEXT_2)
 
 # These additional headers will be be installed if C++ support is enabled. We
 # do not distribute pcrecpparg.h or pcre_stringpiece.h, as these are generated
@@ -155,9 +155,6 @@ am__pcrecpp_unittest_SOURCES_DIST = pcrecpp_unittest.cc
 @WITH_PCRE_CPP_TRUE@	pcrecpp_unittest.$(OBJEXT)
 pcrecpp_unittest_OBJECTS = $(am_pcrecpp_unittest_OBJECTS)
 @WITH_PCRE_CPP_TRUE@pcrecpp_unittest_DEPENDENCIES = libpcrecpp.la
-am_pcredemo_OBJECTS = pcredemo.$(OBJEXT)
-pcredemo_OBJECTS = $(am_pcredemo_OBJECTS)
-pcredemo_DEPENDENCIES = libpcre.la
 am_pcregrep_OBJECTS = pcregrep.$(OBJEXT)
 pcregrep_OBJECTS = $(am_pcregrep_OBJECTS)
 pcregrep_DEPENDENCIES = libpcreposix.la
@@ -191,14 +188,14 @@ SOURCES = $(libpcre_la_SOURCES) $(nodist_libpcre_la_SOURCES) \
 	$(libpcrecpp_la_SOURCES) $(libpcreposix_la_SOURCES) \
 	$(dftables_SOURCES) $(pcre_scanner_unittest_SOURCES) \
 	$(pcre_stringpiece_unittest_SOURCES) \
-	$(pcrecpp_unittest_SOURCES) $(pcredemo_SOURCES) \
-	$(pcregrep_SOURCES) $(pcretest_SOURCES)
+	$(pcrecpp_unittest_SOURCES) $(pcregrep_SOURCES) \
+	$(pcretest_SOURCES)
 DIST_SOURCES = $(libpcre_la_SOURCES) $(am__libpcrecpp_la_SOURCES_DIST) \
 	$(libpcreposix_la_SOURCES) $(am__dftables_SOURCES_DIST) \
 	$(am__pcre_scanner_unittest_SOURCES_DIST) \
 	$(am__pcre_stringpiece_unittest_SOURCES_DIST) \
-	$(am__pcrecpp_unittest_SOURCES_DIST) $(pcredemo_SOURCES) \
-	$(pcregrep_SOURCES) $(pcretest_SOURCES)
+	$(am__pcrecpp_unittest_SOURCES_DIST) $(pcregrep_SOURCES) \
+	$(pcretest_SOURCES)
 man1dir = $(mandir)/man1
 man3dir = $(mandir)/man3
 NROFF = nroff
@@ -429,6 +426,12 @@ MAINTAINERCLEANFILES = pcre.h.generic
 # The pcre_printint.src file is #included by some source files, so it must be
 # distributed. The pcre_chartables.c.dist file is the default version of
 # pcre_chartables.c, used unless --enable-rebuild-chartables is specified.
+
+# PCRE demonstration program. No longer built automatcally. The point is that
+# the users should build it themselves. So just distribute the source.
+# noinst_PROGRAMS += pcredemo
+# pcredemo_SOURCES = pcredemo.c
+# pcredemo_LDADD = libpcre.la
 EXTRA_DIST = doc/perltest.txt NON-UNIX-USE HACKING PrepareRelease \
 	CleanTxt Detrail 132html doc/index.html.src makevp.bat \
 	makevp_c.txt makevp_l.txt pcregexp.pas pcre.h.generic \
@@ -444,7 +447,9 @@ EXTRA_DIST = doc/perltest.txt NON-UNIX-USE HACKING PrepareRelease \
 	testdata/testoutput6 testdata/testoutput7 testdata/testoutput8 \
 	testdata/testoutput9 testdata/testoutput10 \
 	testdata/wintestinput3 testdata/wintestoutput3 perltest.pl \
-	$(pcrecpp_man) CMakeLists.txt config-cmake.h.in
+	pcredemo.c $(pcrecpp_man) cmake/COPYING-CMAKE-SCRIPTS \
+	cmake/FindPackageHandleStandardArgs.cmake \
+	cmake/FindReadline.cmake CMakeLists.txt config-cmake.h.in
 
 # These are the header files we'll install. We do not distribute pcre.h because
 # it is generated from pcre.h.in.
@@ -504,8 +509,19 @@ pcretest_SOURCES = pcretest.c
 pcretest_LDADD = libpcreposix.la
 pcregrep_SOURCES = pcregrep.c
 pcregrep_LDADD = libpcreposix.la
-pcredemo_SOURCES = pcredemo.c
-pcredemo_LDADD = libpcre.la
+
+# A PCRE user submitted the following addition, saying that it "will allow
+# anyone using the 'mingw32' compiler to simply type 'make pcre.dll' and get a
+# nice DLL for Windows use". (It is used by the pcre.dll target.)
+DLL_OBJS = pcre_compile.o pcre_config.o \
+	pcre_dfa_exec.o pcre_exec.o pcre_fullinfo.o pcre_get.o \
+	pcre_globals.o pcre_info.o pcre_maketables.o \
+	pcre_newline.o pcre_ord2utf8.o pcre_refcount.o \
+	pcre_study.o pcre_tables.o pcre_try_flipped.o \
+	pcre_ucp_searchfuncs.o pcre_valid_utf8.o pcre_version.o \
+	pcre_chartables.o \
+	pcre_xclass.o
+
 
 # We have .pc files for pkg-config users.
 pkgconfigdir = $(libdir)/pkgconfig
@@ -698,9 +714,6 @@ pcre_stringpiece_unittest$(EXEEXT): $(pcre_stringpiece_unittest_OBJECTS) $(pcre_
 pcrecpp_unittest$(EXEEXT): $(pcrecpp_unittest_OBJECTS) $(pcrecpp_unittest_DEPENDENCIES)
 	@rm -f pcrecpp_unittest$(EXEEXT)
 	$(CXXLINK) $(pcrecpp_unittest_OBJECTS) $(pcrecpp_unittest_LDADD) $(LIBS)
-pcredemo$(EXEEXT): $(pcredemo_OBJECTS) $(pcredemo_DEPENDENCIES)
-	@rm -f pcredemo$(EXEEXT)
-	$(LINK) $(pcredemo_OBJECTS) $(pcredemo_LDADD) $(LIBS)
 pcregrep$(EXEEXT): $(pcregrep_OBJECTS) $(pcregrep_DEPENDENCIES)
 	@rm -f pcregrep$(EXEEXT)
 	$(LINK) $(pcregrep_OBJECTS) $(pcregrep_LDADD) $(LIBS)
@@ -760,7 +773,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pcre_xclass.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pcrecpp.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pcrecpp_unittest.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pcredemo.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pcregrep.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pcreposix.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pcretest.Po@am__quote@
@@ -1405,6 +1417,12 @@ pcre.h.generic: configure.ac
 
 # A compatibility line, the old build system worked with 'make test'
 test: check ;
+
+# A PCRE user submitted the following addition, saying that it "will allow
+# anyone using the 'mingw32' compiler to simply type 'make pcre.dll' and get a
+# nice DLL for Windows use".
+pcre.dll: $(DLL_OBJS)
+	$(CC) -shared -o pcre.dll -Wl,"--strip-all" -Wl,"--export-all-symbols" $(DLL_OBJS)
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:
