@@ -30,7 +30,7 @@
 // Author: Sanjay Ghemawat
 
 #ifdef HAVE_CONFIG_H
-#include <config.h>
+#include "config.h"
 #endif
 
 #include <stdlib.h>
@@ -43,7 +43,7 @@
 #include <algorithm>
 
 #include "pcrecpp_internal.h"
-#include <pcre.h>
+#include "pcre.h"
 #include "pcrecpp.h"
 #include "pcre_stringpiece.h"
 
@@ -331,13 +331,17 @@ bool RE::Replace(const StringPiece& rewrite,
 
 // Returns PCRE_NEWLINE_CRLF, PCRE_NEWLINE_CR, or PCRE_NEWLINE_LF.
 // Note that PCRE_NEWLINE_CRLF is defined to be P_N_CR | P_N_LF.
+// Modified by PH to add PCRE_NEWLINE_ANY and PCRE_NEWLINE_ANYCRLF.
+
 static int NewlineMode(int pcre_options) {
   // TODO: if we can make it threadsafe, cache this var
   int newline_mode = 0;
   /* if (newline_mode) return newline_mode; */  // do this once it's cached
-  if (pcre_options & (PCRE_NEWLINE_CRLF|PCRE_NEWLINE_CR|PCRE_NEWLINE_LF)) {
+  if (pcre_options & (PCRE_NEWLINE_CRLF|PCRE_NEWLINE_CR|PCRE_NEWLINE_LF|
+                      PCRE_NEWLINE_ANY|PCRE_NEWLINE_ANYCRLF)) {
     newline_mode = (pcre_options &
-                    (PCRE_NEWLINE_CRLF|PCRE_NEWLINE_CR|PCRE_NEWLINE_LF));
+                    (PCRE_NEWLINE_CRLF|PCRE_NEWLINE_CR|PCRE_NEWLINE_LF|
+                     PCRE_NEWLINE_ANY|PCRE_NEWLINE_ANYCRLF));
   } else {
     int newline;
     pcre_config(PCRE_CONFIG_NEWLINE, &newline);
@@ -347,6 +351,10 @@ static int NewlineMode(int pcre_options) {
       newline_mode = PCRE_NEWLINE_CR;
     else if (newline == 3338)
       newline_mode = PCRE_NEWLINE_CRLF;
+    else if (newline == -1)
+      newline_mode = PCRE_NEWLINE_ANY;
+    else if (newline == -2)
+      newline_mode = PCRE_NEWLINE_ANYCRLF;
     else
       assert("" == "Unexpected return value from pcre_config(NEWLINE)");
   }
@@ -376,9 +384,13 @@ int RE::GlobalReplace(const StringPiece& rewrite,
       // Note it's better to call pcre_fullinfo() than to examine
       // all_options(), since options_ could have changed bewteen
       // compile-time and now, but this is simpler and safe enough.
+      // Modified by PH to add ANY and ANYCRLF.
       if (start+1 < static_cast<int>(str->length()) &&
           (*str)[start] == '\r' && (*str)[start+1] == '\n' &&
-          NewlineMode(options_.all_options()) == PCRE_NEWLINE_CRLF) {
+          (NewlineMode(options_.all_options()) == PCRE_NEWLINE_CRLF ||
+           NewlineMode(options_.all_options()) == PCRE_NEWLINE_ANY ||
+           NewlineMode(options_.all_options()) == PCRE_NEWLINE_ANYCRLF)
+          ) {
         matchend++;
       }
       // We also need to advance more than one char if we're in utf8 mode.
@@ -699,7 +711,7 @@ bool Arg::parse_short_radix(const char* str,
   long r;
   if (!parse_long_radix(str, n, &r, radix)) return false; // Could not parse
   if (r < SHRT_MIN || r > SHRT_MAX) return false;       // Out of range
-  *(reinterpret_cast<short*>(dest)) = r;
+  *(reinterpret_cast<short*>(dest)) = static_cast<short>(r);
   return true;
 }
 
@@ -710,7 +722,7 @@ bool Arg::parse_ushort_radix(const char* str,
   unsigned long r;
   if (!parse_ulong_radix(str, n, &r, radix)) return false; // Could not parse
   if (r > USHRT_MAX) return false;                      // Out of range
-  *(reinterpret_cast<unsigned short*>(dest)) = r;
+  *(reinterpret_cast<unsigned short*>(dest)) = static_cast<unsigned short>(r);
   return true;
 }
 
@@ -752,6 +764,8 @@ bool Arg::parse_longlong_radix(const char* str,
   long long r = strtoq(str, &end, radix);
 #elif defined HAVE_STRTOLL
   long long r = strtoll(str, &end, radix);
+#elif defined HAVE__STRTOI64
+  long long r = _strtoi64(str, &end, radix);
 #else
 #error parse_longlong_radix: cannot convert input to a long-long
 #endif
@@ -779,6 +793,8 @@ bool Arg::parse_ulonglong_radix(const char* str,
   unsigned long long r = strtouq(str, &end, radix);
 #elif defined HAVE_STRTOLL
   unsigned long long r = strtoull(str, &end, radix);
+#elif defined HAVE__STRTOI64
+  unsigned long long r = _strtoui64(str, &end, radix);
 #else
 #error parse_ulonglong_radix: cannot convert input to a long-long
 #endif

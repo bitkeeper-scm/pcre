@@ -49,6 +49,7 @@ dist_html_DATA = \
   doc/html/pcreprecompile.html \
   doc/html/pcresample.html \
   doc/html/pcrestack.html \
+  doc/html/pcresyntax.html \
   doc/html/pcretest.html
 
 pcrecpp_html = doc/html/pcrecpp.html
@@ -281,6 +282,8 @@ EXTRA_DIST += \
   testdata/testoutput8 \
   testdata/testoutput9 \
   testdata/testoutput10 \
+  testdata/wintestinput3 \
+  testdata/wintestoutput3 \
   perltest.pl
 
 CLEANFILES += \
@@ -342,6 +345,7 @@ dist_man_MANS = \
   doc/pcreprecompile.3 \
   doc/pcresample.3 \
   doc/pcrestack.3 \
+  doc/pcresyntax.3 \
   doc/pcretest.1
 
 pcrecpp_man = doc/pcrecpp.3

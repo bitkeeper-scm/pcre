@@ -7,9 +7,9 @@ dnl be defined as -RC2, for example. For real releases, it should be defined
 dnl empty.
 
 m4_define(pcre_major, [7])
-m4_define(pcre_minor, [3])
+m4_define(pcre_minor, [4])
 m4_define(pcre_prerelease, [])
-m4_define(pcre_date, [2007-08-28])
+m4_define(pcre_date, [2007-09-21])
 
 # Libtool shared library interface versions (current:revision:age)
 m4_define(libpcre_version, [0:1:0])
@@ -136,6 +136,12 @@ AC_ARG_ENABLE(newline-is-any,
               ac_pcre_newline=any)
 enable_newline="$ac_pcre_newline"
 
+# Handle --enable-bsr-anycrlf
+AC_ARG_ENABLE(bsr-anycrlf,
+              AS_HELP_STRING([--enable-bsr-anycrlf],
+                             [\R matches only CR, LF, CRLF by default]),
+              , enable_bsr_anycrlf=no)
+
 # Handle --enable-ebcdic
 AC_ARG_ENABLE(ebcdic,
               AS_HELP_STRING([--enable-ebcdic],
@@ -231,8 +237,12 @@ it to run on SunOS4 and other "close to standard" systems.
 
 If you are going to build PCRE "by hand" on a system without "configure" you
 should copy the distributed config.h.generic to config.h, and then set up the
-macros the way you need them. Alternatively, you can avoid editing by using -D
-on the compiler command line to set the macro values.
+macro definitions the way you need them. You must then add -DHAVE_CONFIG_H to
+all of your compile commands, so that config.h is included at the start of
+every source.
+
+Alternatively, you can avoid editing by using -D on the compiler command line
+to set the macro values. In this case, you do not have to set -DHAVE_CONFIG_H.
 
 PCRE uses memmove() if HAVE_MEMMOVE is set to 1; otherwise it uses bcopy() if
 HAVE_BCOPY is set to 1. If your system has neither bcopy() nor memmove(), set
@@ -284,7 +294,7 @@ AC_SUBST(pcre_have_ulong_long)
 
 # Checks for library functions.
 
-AC_CHECK_FUNCS(bcopy memmove strerror strtoq strtoll)
+AC_CHECK_FUNCS(bcopy memmove strerror strtoq strtoll _strtoi64)
 
 # This facilitates -ansi builds under Linux
 dnl AC_DEFINE([_GNU_SOURCE], [], [Enable GNU extensions in glibc])
@@ -321,9 +331,19 @@ fi
 
 AC_DEFINE_UNQUOTED([NEWLINE], [$ac_pcre_newline_value], [
   The value of NEWLINE determines the newline character sequence. On
-  Unix-like systems, "configure" can be used to override the default,
-  which is 10. The possible values are 10 (LF), 13 (CR), 3338 (CRLF),
-  -1 (ANY), or -2 (ANYCRLF).])
+  systems that support it, "configure" can be used to override the
+  default, which is 10. The possible values are 10 (LF), 13 (CR),
+  3338 (CRLF), -1 (ANY), or -2 (ANYCRLF).])
+
+if test "$enable_bsr_anycrlf" = "yes"; then
+  AC_DEFINE([BSR_ANYCRLF], [], [
+    By default, the \R escape sequence matches any Unicode line ending
+    character or sequence of characters. If BSR_ANYCRLF is defined, this is
+    changed so that backslash-R matches only CR, LF, or CRLF. The build-
+    time default can be overridden by the user of PCRE at runtime. On
+    systems that support it, "configure" can be used to override the
+    default.])
+fi
 
 AC_DEFINE_UNQUOTED([LINK_SIZE], [$with_link_size], [
   The value of LINK_SIZE determines the number of bytes used to store
@@ -451,31 +471,32 @@ cat <<EOF
 
 $PACKAGE-$VERSION configuration summary:
 
-    Install prefix ......... : ${prefix}
-    C preprocessor ......... : ${CPP}
-    C compiler ............. : ${CC}
-    C++ preprocessor ....... : ${CXXCPP}
-    C++ compiler ........... : ${CXX}
-    Linker ................. : ${LD}
-    C preprocessor flags ... : ${CPPFLAGS}
-    C compiler flags ....... : ${CFLAGS}
-    C++ compiler flags ..... : ${CXXFLAGS}
-    Linker flags ........... : ${LDFLAGS}
-    Extra libraries ........ : ${LIBS}
+    Install prefix ........... : ${prefix}
+    C preprocessor ........... : ${CPP}
+    C compiler ............... : ${CC}
+    C++ preprocessor ......... : ${CXXCPP}
+    C++ compiler ............. : ${CXX}
+    Linker ................... : ${LD}
+    C preprocessor flags ..... : ${CPPFLAGS}
+    C compiler flags ......... : ${CFLAGS}
+    C++ compiler flags ....... : ${CXXFLAGS}
+    Linker flags ............. : ${LDFLAGS}
+    Extra libraries .......... : ${LIBS}
 
-    Build C++ library ...... : ${enable_cpp}
-    Enable UTF-8 support ... : ${enable_utf8}
-    Unicode properties ..... : ${enable_unicode_properties}
-    Newline char/sequence .. : ${enable_newline}
-    EBCDIC coding .......... : ${enable_ebcdic}
-    Rebuild char tables .... : ${enable_rebuild_chartables}
-    Use stack recursion .... : ${enable_stack_for_recursion}
-    POSIX mem threshold .... : ${with_posix_malloc_threshold}
-    Internal link size ..... : ${with_link_size}
-    Match limit ............ : ${with_match_limit}
-    Match limit recursion .. : ${with_match_limit_recursion}
-    Build shared libs ...... : ${enable_shared}
-    Build static libs ...... : ${enable_static}
+    Build C++ library ........ : ${enable_cpp}
+    Enable UTF-8 support ..... : ${enable_utf8}
+    Unicode properties ....... : ${enable_unicode_properties}
+    Newline char/sequence .... : ${enable_newline}
+    \R matches only ANYCRLF .. : ${enable_bsr_anycrlf}
+    EBCDIC coding ............ : ${enable_ebcdic}
+    Rebuild char tables ...... : ${enable_rebuild_chartables}
+    Use stack recursion ...... : ${enable_stack_for_recursion}
+    POSIX mem threshold ...... : ${with_posix_malloc_threshold}
+    Internal link size ....... : ${with_link_size}
+    Match limit .............. : ${with_match_limit}
+    Match limit recursion .... : ${with_match_limit_recursion}
+    Build shared libs ........ : ${enable_shared}
+    Build static libs ........ : ${enable_static}
 
 EOF
 
