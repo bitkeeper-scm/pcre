@@ -24,19 +24,20 @@ man page, in case the conversion went wrong.
 <li><a name="TOC9" href="#SEC9">VERTICAL BAR</a>
 <li><a name="TOC10" href="#SEC10">INTERNAL OPTION SETTING</a>
 <li><a name="TOC11" href="#SEC11">SUBPATTERNS</a>
-<li><a name="TOC12" href="#SEC12">NAMED SUBPATTERNS</a>
-<li><a name="TOC13" href="#SEC13">REPETITION</a>
-<li><a name="TOC14" href="#SEC14">ATOMIC GROUPING AND POSSESSIVE QUANTIFIERS</a>
-<li><a name="TOC15" href="#SEC15">BACK REFERENCES</a>
-<li><a name="TOC16" href="#SEC16">ASSERTIONS</a>
-<li><a name="TOC17" href="#SEC17">CONDITIONAL SUBPATTERNS</a>
-<li><a name="TOC18" href="#SEC18">COMMENTS</a>
-<li><a name="TOC19" href="#SEC19">RECURSIVE PATTERNS</a>
-<li><a name="TOC20" href="#SEC20">SUBPATTERNS AS SUBROUTINES</a>
-<li><a name="TOC21" href="#SEC21">CALLOUTS</a>
-<li><a name="TOC22" href="#SEC22">SEE ALSO</a>
-<li><a name="TOC23" href="#SEC23">AUTHOR</a>
-<li><a name="TOC24" href="#SEC24">REVISION</a>
+<li><a name="TOC12" href="#SEC12">DUPLICATE SUBPATTERN NUMBERS</a>
+<li><a name="TOC13" href="#SEC13">NAMED SUBPATTERNS</a>
+<li><a name="TOC14" href="#SEC14">REPETITION</a>
+<li><a name="TOC15" href="#SEC15">ATOMIC GROUPING AND POSSESSIVE QUANTIFIERS</a>
+<li><a name="TOC16" href="#SEC16">BACK REFERENCES</a>
+<li><a name="TOC17" href="#SEC17">ASSERTIONS</a>
+<li><a name="TOC18" href="#SEC18">CONDITIONAL SUBPATTERNS</a>
+<li><a name="TOC19" href="#SEC19">COMMENTS</a>
+<li><a name="TOC20" href="#SEC20">RECURSIVE PATTERNS</a>
+<li><a name="TOC21" href="#SEC21">SUBPATTERNS AS SUBROUTINES</a>
+<li><a name="TOC22" href="#SEC22">CALLOUTS</a>
+<li><a name="TOC23" href="#SEC23">SEE ALSO</a>
+<li><a name="TOC24" href="#SEC24">AUTHOR</a>
+<li><a name="TOC25" href="#SEC25">REVISION</a>
 </ul>
 <br><a name="SEC1" href="#TOC1">PCRE REGULAR EXPRESSION DETAILS</a><br>
 <P>
@@ -63,8 +64,10 @@ The remainder of this document discusses the patterns that are supported by
 PCRE when its main matching function, <b>pcre_exec()</b>, is used.
 From release 6.0, PCRE offers a second matching function,
 <b>pcre_dfa_exec()</b>, which matches using a different algorithm that is not
-Perl-compatible. The advantages and disadvantages of the alternative function,
-and how it differs from the normal function, are discussed in the
+Perl-compatible. Some of the features discussed below are not available when
+<b>pcre_dfa_exec()</b> is used. The advantages and disadvantages of the
+alternative function, and how it differs from the normal function, are
+discussed in the
 <a href="pcrematching.html"><b>pcrematching</b></a>
 page.
 </P>
@@ -253,8 +256,8 @@ Absolute and relative back references
 </b><br>
 <P>
 The sequence \g followed by a positive or negative number, optionally enclosed
-in braces, is an absolute or relative back reference. Back references are
-discussed
+in braces, is an absolute or relative back reference. A named back reference
+can be coded as \g{name}. Back references are discussed
 <a href="#backreferences">later,</a>
 following the discussion of
 <a href="#subpattern">parenthesized subpatterns.</a>
@@ -268,8 +271,12 @@ following are always recognized:
 <pre>
   \d     any decimal digit
   \D     any character that is not a decimal digit
+  \h     any horizontal whitespace character
+  \H     any character that is not a horizontal whitespace character
   \s     any whitespace character
   \S     any character that is not a whitespace character
+  \v     any vertical whitespace character
+  \V     any character that is not a vertical whitespace character
   \w     any "word" character
   \W     any "non-word" character
 </pre>
@@ -285,9 +292,52 @@ there is no character to match.
 <P>
 For compatibility with Perl, \s does not match the VT character (code 11).
 This makes it different from the the POSIX "space" class. The \s characters
-are HT (9), LF (10), FF (12), CR (13), and space (32). (If "use locale;" is
+are HT (9), LF (10), FF (12), CR (13), and space (32). If "use locale;" is
 included in a Perl script, \s may match the VT character. In PCRE, it never
-does.)
+does.
+</P>
+<P>
+In UTF-8 mode, characters with values greater than 128 never match \d, \s, or
+\w, and always match \D, \S, and \W. This is true even when Unicode
+character property support is available. These sequences retain their original
+meanings from before UTF-8 support was available, mainly for efficiency
+reasons.
+</P>
+<P>
+The sequences \h, \H, \v, and \V are Perl 5.10 features. In contrast to the
+other sequences, these do match certain high-valued codepoints in UTF-8 mode.
+The horizontal space characters are:
+<pre>
+  U+0009     Horizontal tab
+  U+0020     Space
+  U+00A0     Non-break space
+  U+1680     Ogham space mark
+  U+180E     Mongolian vowel separator
+  U+2000     En quad
+  U+2001     Em quad
+  U+2002     En space
+  U+2003     Em space
+  U+2004     Three-per-em space
+  U+2005     Four-per-em space
+  U+2006     Six-per-em space
+  U+2007     Figure space
+  U+2008     Punctuation space
+  U+2009     Thin space
+  U+200A     Hair space
+  U+202F     Narrow no-break space
+  U+205F     Medium mathematical space
+  U+3000     Ideographic space
+</pre>
+The vertical space characters are:
+<pre>
+  U+000A     Linefeed
+  U+000B     Vertical tab
+  U+000C     Formfeed
+  U+000D     Carriage return
+  U+0085     Next line
+  U+2028     Line separator
+  U+2029     Paragraph separator
+</PRE>
 </P>
 <P>
 A "word" character is an underscore or any character less than 256 that is a
@@ -299,20 +349,15 @@ in the
 <a href="pcreapi.html"><b>pcreapi</b></a>
 page). For example, in a French locale such as "fr_FR" in Unix-like systems,
 or "french" in Windows, some character codes greater than 128 are used for
-accented letters, and these are matched by \w.
-</P>
-<P>
-In UTF-8 mode, characters with values greater than 128 never match \d, \s, or
-\w, and always match \D, \S, and \W. This is true even when Unicode
-character property support is available. The use of locales with Unicode is
-discouraged.
+accented letters, and these are matched by \w. The use of locales with Unicode
+is discouraged.
 </P>
 <br><b>
 Newline sequences
 </b><br>
 <P>
 Outside a character class, the escape sequence \R matches any Unicode newline
-sequence. This is an extension to Perl. In non-UTF-8 mode \R is equivalent to
+sequence. This is a Perl 5.10 feature. In non-UTF-8 mode \R is equivalent to
 the following:
 <pre>
   (?&#62;\r\n|\n|\x0b|\f|\r|\x85)
@@ -339,8 +384,10 @@ Unicode character properties
 </b><br>
 <P>
 When PCRE is built with Unicode character property support, three additional
-escape sequences to match character properties are available when UTF-8 mode
-is selected. They are:
+escape sequences that match characters with specific properties are available.
+When not in UTF-8 mode, these sequences are of course limited to testing
+characters whose codepoints are less than 256, but they do work in this mode.
+The extra escape sequences are:
 <pre>
   \p{<i>xx</i>}   a character with the <i>xx</i> property
   \P{<i>xx</i>}   a character without the <i>xx</i> property
@@ -521,13 +568,37 @@ or more characters with the "mark" property, and treats the sequence as an
 atomic group
 <a href="#atomicgroup">(see below).</a>
 Characters with the "mark" property are typically accents that affect the
-preceding character.
+preceding character. None of them have codepoints less than 256, so in
+non-UTF-8 mode \X matches any one character.
 </P>
 <P>
 Matching characters by Unicode property is not fast, because PCRE has to search
 a structure that contains data for over fifteen thousand characters. That is
 why the traditional escape sequences such as \d and \w do not use Unicode
 properties in PCRE.
+<a name="resetmatchstart"></a></P>
+<br><b>
+Resetting the match start
+</b><br>
+<P>
+The escape sequence \K, which is a Perl 5.10 feature, causes any previously
+matched characters not to be included in the final matched sequence. For
+example, the pattern:
+<pre>
+  foo\Kbar
+</pre>
+matches "foobar", but reports that it has matched "bar". This feature is
+similar to a lookbehind assertion
+<a href="#lookbehind">(described below).</a>
+However, in this case, the part of the subject before the real match does not
+have to be of fixed length, as lookbehind assertions do. The use of \K does
+not interfere with the setting of
+<a href="#subpattern">captured substrings.</a>
+For example, when the pattern
+<pre>
+  (foo)\Kbar
+</pre>
+matches "foobar", the first substring is still set to "foo".
 <a name="smallassertions"></a></P>
 <br><b>
 Simple assertions
@@ -941,7 +1012,38 @@ from left to right, and options are not reset until the end of the subpattern
 is reached, an option setting in one branch does affect subsequent branches, so
 the above patterns match "SUNDAY" as well as "Saturday".
 </P>
-<br><a name="SEC12" href="#TOC1">NAMED SUBPATTERNS</a><br>
+<br><a name="SEC12" href="#TOC1">DUPLICATE SUBPATTERN NUMBERS</a><br>
+<P>
+Perl 5.10 introduced a feature whereby each alternative in a subpattern uses
+the same numbers for its capturing parentheses. Such a subpattern starts with
+(?| and is itself a non-capturing subpattern. For example, consider this
+pattern:
+<pre>
+  (?|(Sat)ur|(Sun))day
+</pre>
+Because the two alternatives are inside a (?| group, both sets of capturing
+parentheses are numbered one. Thus, when the pattern matches, you can look
+at captured substring number one, whichever alternative matched. This construct
+is useful when you want to capture part, but not all, of one of a number of
+alternatives. Inside a (?| group, parentheses are numbered as usual, but the
+number is reset at the start of each branch. The numbers of any capturing
+buffers that follow the subpattern start after the highest number used in any
+branch. The following example is taken from the Perl documentation.
+The numbers underneath show in which buffer the captured content will be
+stored.
+<pre>
+  # before  ---------------branch-reset----------- after
+  / ( a )  (?| x ( y ) z | (p (q) r) | (t) u (v) ) ( z ) /x
+  # 1            2         2  3        2     3     4
+</pre>
+A backreference or a recursive call to a numbered subpattern always refers to
+the first one in the pattern with the given number.
+</P>
+<P>
+An alternative approach to using this "branch reset" feature is to use
+duplicate named subpatterns, as described in the next section.
+</P>
+<br><a name="SEC13" href="#TOC1">NAMED SUBPATTERNS</a><br>
 <P>
 Identifying capturing parentheses by number is simple, but it can be very hard
 to keep track of the numbers in complicated regular expressions. Furthermore,
@@ -983,6 +1085,10 @@ abbreviation. This pattern (ignoring the line breaks) does the job:
   (?&#60;DN&#62;Sat)(?:urday)?
 </pre>
 There are five capturing substrings, but only one is ever set after a match.
+(An alternative way of solving this problem is to use a "branch reset"
+subpattern, as described in the previous section.)
+</P>
+<P>
 The convenience function for extracting the data by name returns the substring
 for the first (and in this example, the only) subpattern of that name that
 matched. This saves searching to find which numbered subpattern it was. If you
@@ -992,7 +1098,7 @@ details of the interfaces for handling named subpatterns, see the
 <a href="pcreapi.html"><b>pcreapi</b></a>
 documentation.
 </P>
-<br><a name="SEC13" href="#TOC1">REPETITION</a><br>
+<br><a name="SEC14" href="#TOC1">REPETITION</a><br>
 <P>
 Repetition is specified by quantifiers, which can follow any of the following
 items:
@@ -1143,7 +1249,7 @@ example, after
 </pre>
 matches "aba" the value of the second captured substring is "b".
 <a name="atomicgroup"></a></P>
-<br><a name="SEC14" href="#TOC1">ATOMIC GROUPING AND POSSESSIVE QUANTIFIERS</a><br>
+<br><a name="SEC15" href="#TOC1">ATOMIC GROUPING AND POSSESSIVE QUANTIFIERS</a><br>
 <P>
 With both maximizing ("greedy") and minimizing ("ungreedy" or "lazy")
 repetition, failure of what follows normally causes the repeated item to be
@@ -1242,7 +1348,7 @@ an atomic group, like this:
 </pre>
 sequences of non-digits cannot be broken, and failure happens quickly.
 <a name="backreferences"></a></P>
-<br><a name="SEC15" href="#TOC1">BACK REFERENCES</a><br>
+<br><a name="SEC16" href="#TOC1">BACK REFERENCES</a><br>
 <P>
 Outside a character class, a backslash followed by a digit greater than 0 (and
 possibly further digits) is a back reference to a capturing subpattern earlier
@@ -1309,12 +1415,17 @@ matches "rah rah" and "RAH RAH", but not "RAH rah", even though the original
 capturing subpattern is matched caselessly.
 </P>
 <P>
-Back references to named subpatterns use the Perl syntax \k&#60;name&#62; or \k'name'
-or the Python syntax (?P=name). We could rewrite the above example in either of
+There are several different ways of writing back references to named
+subpatterns. The .NET syntax \k{name} and the Perl syntax \k&#60;name&#62; or
+\k'name' are supported, as is the Python syntax (?P=name). Perl 5.10's unified
+back reference syntax, in which \g can be used for both numeric and named
+references, is also supported. We could rewrite the above example in any of
 the following ways:
 <pre>
   (?&#60;p1&#62;(?i)rah)\s+\k&#60;p1&#62;
+  (?'p1'(?i)rah)\s+\k{p1}
   (?P&#60;p1&#62;(?i)rah)\s+(?P=p1)
+  (?&#60;p1&#62;(?i)rah)\s+\g{p1}
 </pre>
 A subpattern that is referenced by name may appear in the pattern before or
 after the reference.
@@ -1350,7 +1461,7 @@ that the first iteration does not need to match the back reference. This can be
 done using alternation, as in the example above, or by a quantifier with a
 minimum of zero.
 <a name="bigassertions"></a></P>
-<br><a name="SEC16" href="#TOC1">ASSERTIONS</a><br>
+<br><a name="SEC17" href="#TOC1">ASSERTIONS</a><br>
 <P>
 An assertion is a test on the characters following or preceding the current
 matching point that does not actually consume any characters. The simple
@@ -1432,6 +1543,12 @@ lengths, but it is acceptable if rewritten to use two top-level branches:
 <pre>
   (?&#60;=abc|abde)
 </pre>
+In some cases, the Perl 5.10 escape sequence \K
+<a href="#resetmatchstart">(see above)</a>
+can be used instead of a lookbehind assertion; this is not restricted to a
+fixed-length.
+</P>
+<P>
 The implementation of lookbehind assertions is, for each alternative, to
 temporarily move the current position back by the fixed length and then try to
 match. If there are insufficient characters before the current position, the
@@ -1504,7 +1621,7 @@ preceded by "foo", while
 is another pattern that matches "foo" preceded by three digits and any three
 characters that are not "999".
 <a name="conditions"></a></P>
-<br><a name="SEC17" href="#TOC1">CONDITIONAL SUBPATTERNS</a><br>
+<br><a name="SEC18" href="#TOC1">CONDITIONAL SUBPATTERNS</a><br>
 <P>
 It is possible to cause the matching process to obey a subpattern
 conditionally or to choose between two alternative subpatterns, depending on
@@ -1528,7 +1645,11 @@ Checking for a used subpattern by number
 <P>
 If the text between the parentheses consists of a sequence of digits, the
 condition is true if the capturing subpattern of that number has previously
-matched.
+matched. An alternative notation is to precede the digits with a plus or minus
+sign. In this case, the subpattern number is relative rather than absolute.
+The most recently opened parentheses can be referenced by (?(-1), the next most
+recent by (?(-2), and so on. In looping constructs it can also make sense to
+refer to subsequent groups with constructs such as (?(+2).
 </P>
 <P>
 Consider the following pattern, which contains non-significant white space to
@@ -1546,6 +1667,14 @@ the condition is true, and so the yes-pattern is executed and a closing
 parenthesis is required. Otherwise, since no-pattern is not present, the
 subpattern matches nothing. In other words, this pattern matches a sequence of
 non-parentheses, optionally enclosed in parentheses.
+</P>
+<P>
+If you were embedding this pattern in a larger one, you could use a relative
+reference:
+<pre>
+  ...other stuff... ( \( )?    [^()]+    (?(-1) \) ) ...
+</pre>
+This makes the fragment independent of the parentheses in the larger pattern.
 </P>
 <br><b>
 Checking for a used subpattern by name
@@ -1630,7 +1759,7 @@ subject is matched against the first alternative; otherwise it is matched
 against the second. This pattern matches strings in one of the two forms
 dd-aaa-dd or dd-dd-dd, where aaa are letters and dd are digits.
 <a name="comments"></a></P>
-<br><a name="SEC18" href="#TOC1">COMMENTS</a><br>
+<br><a name="SEC19" href="#TOC1">COMMENTS</a><br>
 <P>
 The sequence (?# marks the start of a comment that continues up to the next
 closing parenthesis. Nested parentheses are not permitted. The characters
@@ -1641,7 +1770,7 @@ If the PCRE_EXTENDED option is set, an unescaped # character outside a
 character class introduces a comment that continues to immediately after the
 next newline in the pattern.
 <a name="recursion"></a></P>
-<br><a name="SEC19" href="#TOC1">RECURSIVE PATTERNS</a><br>
+<br><a name="SEC20" href="#TOC1">RECURSIVE PATTERNS</a><br>
 <P>
 Consider the problem of matching a string in parentheses, allowing for
 unlimited nested parentheses. Without the use of recursion, the best that can
@@ -1697,19 +1826,37 @@ pattern, so instead you could use this:
   ( \( ( (?&#62;[^()]+) | (?1) )* \) )
 </pre>
 We have put the pattern into parentheses, and caused the recursion to refer to
-them instead of the whole pattern. In a larger pattern, keeping track of
-parenthesis numbers can be tricky. It may be more convenient to use named
-parentheses instead. The Perl syntax for this is (?&name); PCRE's earlier
-syntax (?P&#62;name) is also supported. We could rewrite the above example as
-follows:
+them instead of the whole pattern.
+</P>
+<P>
+In a larger pattern, keeping track of parenthesis numbers can be tricky. This
+is made easier by the use of relative references. (A Perl 5.10 feature.)
+Instead of (?1) in the pattern above you can write (?-2) to refer to the second
+most recently opened parentheses preceding the recursion. In other words, a
+negative number counts capturing parentheses leftwards from the point at which
+it is encountered.
+</P>
+<P>
+It is also possible to refer to subsequently opened parentheses, by writing
+references such as (?+2). However, these cannot be recursive because the
+reference is not inside the parentheses that are referenced. They are always
+"subroutine" calls, as described in the next section.
+</P>
+<P>
+An alternative approach is to use named parentheses instead. The Perl syntax
+for this is (?&name); PCRE's earlier syntax (?P&#62;name) is also supported. We
+could rewrite the above example as follows:
 <pre>
   (?&#60;pn&#62; \( ( (?&#62;[^()]+) | (?&pn) )* \) )
 </pre>
 If there is more than one subpattern with the same name, the earliest one is
-used. This particular example pattern contains nested unlimited repeats, and so
-the use of atomic grouping for matching strings of non-parentheses is important
-when applying the pattern to strings that do not match. For example, when this
-pattern is applied to
+used.
+</P>
+<P>
+This particular example pattern that we have been looking at contains nested
+unlimited repeats, and so the use of atomic grouping for matching strings of
+non-parentheses is important when applying the pattern to strings that do not
+match. For example, when this pattern is applied to
 <pre>
   (aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa()
 </pre>
@@ -1753,12 +1900,19 @@ In this pattern, (?(R) is the start of a conditional subpattern, with two
 different alternatives for the recursive and non-recursive cases. The (?R) item
 is the actual recursive call.
 <a name="subpatternsassubroutines"></a></P>
-<br><a name="SEC20" href="#TOC1">SUBPATTERNS AS SUBROUTINES</a><br>
+<br><a name="SEC21" href="#TOC1">SUBPATTERNS AS SUBROUTINES</a><br>
 <P>
 If the syntax for a recursive subpattern reference (either by number or by
 name) is used outside the parentheses to which it refers, it operates like a
 subroutine in a programming language. The "called" subpattern may be defined
-before or after the reference. An earlier example pointed out that the pattern
+before or after the reference. A numbered reference can be absolute or
+relative, as in these examples:
+<pre>
+  (...(absolute)...)...(?2)...
+  (...(relative)...)...(?-1)...
+  (...(?+1)...(relative)...
+</pre>
+An earlier example pointed out that the pattern
 <pre>
   (sens|respons)e and \1ibility
 </pre>
@@ -1781,12 +1935,12 @@ When a subpattern is used as a subroutine, processing options such as
 case-independence are fixed when the subpattern is defined. They cannot be
 changed for different calls. For example, consider this pattern:
 <pre>
-  (abc)(?i:(?1))
+  (abc)(?i:(?-1))
 </pre>
 It matches "abcabc". It does not match "abcABC" because the change of
 processing option does not affect the called subpattern.
 </P>
-<br><a name="SEC21" href="#TOC1">CALLOUTS</a><br>
+<br><a name="SEC22" href="#TOC1">CALLOUTS</a><br>
 <P>
 Perl has a feature whereby using the sequence (?{...}) causes arbitrary Perl
 code to be obeyed in the middle of matching a regular expression. This makes it
@@ -1821,11 +1975,11 @@ description of the interface to the callout function is given in the
 <a href="pcrecallout.html"><b>pcrecallout</b></a>
 documentation.
 </P>
-<br><a name="SEC22" href="#TOC1">SEE ALSO</a><br>
+<br><a name="SEC23" href="#TOC1">SEE ALSO</a><br>
 <P>
 <b>pcreapi</b>(3), <b>pcrecallout</b>(3), <b>pcrematching</b>(3), <b>pcre</b>(3).
 </P>
-<br><a name="SEC23" href="#TOC1">AUTHOR</a><br>
+<br><a name="SEC24" href="#TOC1">AUTHOR</a><br>
 <P>
 Philip Hazel
 <br>
@@ -1834,9 +1988,9 @@ University Computing Service
 Cambridge CB2 3QH, England.
 <br>
 </P>
-<br><a name="SEC24" href="#TOC1">REVISION</a><br>
+<br><a name="SEC25" href="#TOC1">REVISION</a><br>
 <P>
-Last updated: 06 March 2007
+Last updated: 19 June 2007
 <br>
 Copyright &copy; 1997-2007 University of Cambridge.
 <br>

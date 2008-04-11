@@ -407,7 +407,8 @@ check_SCRIPTS =
 dist_noinst_SCRIPTS = RunTest RunGrepTest
 
 # Additional files to delete on 'make clean' and 'make maintainer-clean'.
-CLEANFILES = pcre_chartables.c testsavedregex teststderr testtry
+CLEANFILES = pcre_chartables.c testsavedregex teststderr testtry \
+	testNinput
 MAINTAINERCLEANFILES = pcre.h.generic
 
 # Additional files to bundle with the distribution, over and above what
@@ -435,11 +436,12 @@ EXTRA_DIST = doc/perltest.txt NON-UNIX-USE HACKING PrepareRelease \
 	testdata/grepoutput8 testdata/grepoutputN testdata/testinput1 \
 	testdata/testinput2 testdata/testinput3 testdata/testinput4 \
 	testdata/testinput5 testdata/testinput6 testdata/testinput7 \
-	testdata/testinput8 testdata/testinput9 testdata/testoutput1 \
-	testdata/testoutput2 testdata/testoutput3 testdata/testoutput4 \
-	testdata/testoutput5 testdata/testoutput6 testdata/testoutput7 \
-	testdata/testoutput8 testdata/testoutput9 perltest.pl \
-	$(pcrecpp_man) CMakeLists.txt config-cmake.h.in
+	testdata/testinput8 testdata/testinput9 testdata/testinput10 \
+	testdata/testoutput1 testdata/testoutput2 testdata/testoutput3 \
+	testdata/testoutput4 testdata/testoutput5 testdata/testoutput6 \
+	testdata/testoutput7 testdata/testoutput8 testdata/testoutput9 \
+	testdata/testoutput10 perltest.pl $(pcrecpp_man) \
+	CMakeLists.txt config-cmake.h.in
 
 # These are the header files we'll install. We do not distribute pcre.h because
 # it is generated from pcre.h.in.

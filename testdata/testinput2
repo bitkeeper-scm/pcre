@@ -28,9 +28,9 @@
     *** Failers
     def\nabc
 
-/ab\hdef/X
+/ab\idef/X
 
-/(?X)ab\hdef/X
+/(?X)ab\idef/X
 
 /x{5,4}/
 
@@ -236,7 +236,7 @@
 
 /((?i)blah)\s+\1/I
 
-/((?i)b)/IDS
+/((?i)b)/IDZS
 
 /(a*b|(?i:c*(?-i)d))/IS
 
@@ -440,19 +440,19 @@
 
 /word ((?:[a-zA-Z0-9]+ )((?:[a-zA-Z0-9]+ )((?:[a-zA-Z0-9]+ )((?:[a-zA-Z0-9]+
 )((?:[a-zA-Z0-9]+ )((?:[a-zA-Z0-9]+ )((?:[a-zA-Z0-9]+ )((?:[a-zA-Z0-9]+
-)?)?)?)?)?)?)?)?)?otherword/IM
+)?)?)?)?)?)?)?)?)?otherword/I
 
-/.*X/ID
+/.*X/IDZ
 
-/.*X/IDs
+/.*X/IDZs
 
-/(.*X|^B)/ID
+/(.*X|^B)/IDZ
 
-/(.*X|^B)/IDs
+/(.*X|^B)/IDZs
 
-/(?s)(.*X|^B)/ID
+/(?s)(.*X|^B)/IDZ
 
-/(?s:.*X|^B)/ID
+/(?s:.*X|^B)/IDZ
 
 /\Biss\B/I+
     Mississippi
@@ -666,53 +666,53 @@
     (ab(cd)ef)
     (ab(cd(ef)gh)ij)
 
-/^[[:alnum:]]/D
+/^[[:alnum:]]/DZ
 
-/^[[:^alnum:]]/D
+/^[[:^alnum:]]/DZ
 
-/^[[:alpha:]]/D
+/^[[:alpha:]]/DZ
 
-/^[[:^alpha:]]/D
+/^[[:^alpha:]]/DZ
 
 /[_[:alpha:]]/IS
 
-/^[[:ascii:]]/D
+/^[[:ascii:]]/DZ
 
-/^[[:^ascii:]]/D
+/^[[:^ascii:]]/DZ
 
-/^[[:blank:]]/D
+/^[[:blank:]]/DZ
 
-/^[[:^blank:]]/D
+/^[[:^blank:]]/DZ
 
 /[\n\x0b\x0c\x0d[:blank:]]/IS
 
-/^[[:cntrl:]]/D
+/^[[:cntrl:]]/DZ
 
-/^[[:digit:]]/D
+/^[[:digit:]]/DZ
 
-/^[[:graph:]]/D
+/^[[:graph:]]/DZ
 
-/^[[:lower:]]/D
+/^[[:lower:]]/DZ
 
-/^[[:print:]]/D
+/^[[:print:]]/DZ
 
-/^[[:punct:]]/D
+/^[[:punct:]]/DZ
 
-/^[[:space:]]/D
+/^[[:space:]]/DZ
 
-/^[[:upper:]]/D
+/^[[:upper:]]/DZ
 
-/^[[:xdigit:]]/D
+/^[[:xdigit:]]/DZ
 
-/^[[:word:]]/D
+/^[[:word:]]/DZ
 
-/^[[:^cntrl:]]/D
+/^[[:^cntrl:]]/DZ
 
-/^[12[:^digit:]]/D
+/^[12[:^digit:]]/DZ
 
-/^[[:^blank:]]/D
+/^[[:^blank:]]/DZ
 
-/[01[:alpha:]%]/D
+/[01[:alpha:]%]/DZ
 
 /[[.ch.]]/I
 
@@ -796,63 +796,63 @@
 
 /--------------------------------------------------------------------/I
 
-/#/IxMD
+/#/IxDZ
 
-/a#/IxMD
+/a#/IxDZ
 
-/[\s]/D
+/[\s]/DZ
 
-/[\S]/D
+/[\S]/DZ
 
-/a(?i)b/D
+/a(?i)b/DZ
     ab
     aB
     *** Failers
     AB
 
-/(a(?i)b)/D
+/(a(?i)b)/DZ
     ab
     aB
     *** Failers
     AB
 
-/   (?i)abc/IxD
+/   (?i)abc/IxDZ
 
 /#this is a comment
-  (?i)abc/IxD
+  (?i)abc/IxDZ
 
-/123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890/D
+/123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890/DZ
 
-/\Q123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890/D
+/\Q123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890/DZ
 
-/\Q\E/D
+/\Q\E/DZ
     \
 
-/\Q\Ex/D
+/\Q\Ex/DZ
 
-/ \Q\E/D
+/ \Q\E/DZ
 
-/a\Q\E/D
+/a\Q\E/DZ
   abc
   bca
   bac
 
-/a\Q\Eb/D
+/a\Q\Eb/DZ
   abc
 
-/\Q\Eabc/D
+/\Q\Eabc/DZ
 
-/x*+\w/D
+/x*+\w/DZ
     *** Failers
     xxxxx
 
-/x?+/D
+/x?+/DZ
 
-/x++/D
+/x++/DZ
 
-/x{1,3}+/D
+/x{1,3}+/DZ
 
-/(x)*+/D
+/(x)*+/DZ
 
 /^(\w++|\s++)*$/I
     now is the time for all good men to come to the aid of the party
@@ -882,7 +882,7 @@
     *** Failers
     ((()aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
 
-/(abc){1,3}+/D
+/(abc){1,3}+/DZ
 
 /a+?+/I
 
@@ -892,17 +892,17 @@
 
 /a{2,3}?+b/IU
 
-/x(?U)a++b/D
+/x(?U)a++b/DZ
     xaaaab
 
-/(?U)xa++b/D
+/(?U)xa++b/DZ
     xaaaab
 
-/^((a+)(?U)([ab]+)(?-U)([bc]+)(\w*))/D
+/^((a+)(?U)([ab]+)(?-U)([bc]+)(\w*))/DZ
 
-/^x(?U)a+b/D
+/^x(?U)a+b/DZ
 
-/^x(?U)(a+)b/D
+/^x(?U)(a+)b/DZ
 
 /[.x.]/I
 
@@ -926,11 +926,11 @@
 
 /[[:space:]/I
 
-/[\s]/IDM
+/[\s]/IDZ
 
-/[[:space:]]/IDM
+/[[:space:]]/IDZ
 
-/[[:space:]abcde]/IDM
+/[[:space:]abcde]/IDZ
 
 /< (?: (?(R) \d++  | [^<>]*+) | (?R)) * >/Ix
     <>
@@ -942,9 +942,9 @@
     *** Failers
     <abc
 
-|8J\$WE\<\.rX\+ix\[d1b\!H\#\?vV0vrK\:ZH1\=2M\>iV\;\?aPhFB\<\*vW\@QW\@sO9\}cfZA\-i\'w\%hKd6gt1UJP\,15_\#QY\$M\^Mss_U\/\]\&LK9\[5vQub\^w\[KDD\<EjmhUZ\?\.akp2dF\>qmj\;2\}YWFdYx\.Ap\]hjCPTP\(n28k\+3\;o\&WXqs\/gOXdr\$\:r\'do0\;b4c\(f_Gr\=\"\\4\)\[01T7ajQJvL\$W\~mL_sS\/4h\:x\*\[ZN\=KLs\&L5zX\/\/\>it\,o\:aU\(\;Z\>pW\&T7oP\'2K\^E\:x9\'c\[\%z\-\,64JQ5AeH_G\#KijUKghQw\^\\vea3a\?kka_G\$8\#\`\*kynsxzBLru\'\]k_\[7FrVx\}\^\=\$blx\>s\-N\%j\;D\*aZDnsw\:YKZ\%Q\.Kne9\#hP\?\+b3\(SOvL\,\^\;\&u5\@\?5C5Bhb\=m\-vEh_L15Jl\]U\)0RP6\{q\%L\^_z5E\'Dw6X\b|IDM
+|8J\$WE\<\.rX\+ix\[d1b\!H\#\?vV0vrK\:ZH1\=2M\>iV\;\?aPhFB\<\*vW\@QW\@sO9\}cfZA\-i\'w\%hKd6gt1UJP\,15_\#QY\$M\^Mss_U\/\]\&LK9\[5vQub\^w\[KDD\<EjmhUZ\?\.akp2dF\>qmj\;2\}YWFdYx\.Ap\]hjCPTP\(n28k\+3\;o\&WXqs\/gOXdr\$\:r\'do0\;b4c\(f_Gr\=\"\\4\)\[01T7ajQJvL\$W\~mL_sS\/4h\:x\*\[ZN\=KLs\&L5zX\/\/\>it\,o\:aU\(\;Z\>pW\&T7oP\'2K\^E\:x9\'c\[\%z\-\,64JQ5AeH_G\#KijUKghQw\^\\vea3a\?kka_G\$8\#\`\*kynsxzBLru\'\]k_\[7FrVx\}\^\=\$blx\>s\-N\%j\;D\*aZDnsw\:YKZ\%Q\.Kne9\#hP\?\+b3\(SOvL\,\^\;\&u5\@\?5C5Bhb\=m\-vEh_L15Jl\]U\)0RP6\{q\%L\^_z5E\'Dw6X\b|IDZ
 
-|\$\<\.X\+ix\[d1b\!H\#\?vV0vrK\:ZH1\=2M\>iV\;\?aPhFB\<\*vW\@QW\@sO9\}cfZA\-i\'w\%hKd6gt1UJP\,15_\#QY\$M\^Mss_U\/\]\&LK9\[5vQub\^w\[KDD\<EjmhUZ\?\.akp2dF\>qmj\;2\}YWFdYx\.Ap\]hjCPTP\(n28k\+3\;o\&WXqs\/gOXdr\$\:r\'do0\;b4c\(f_Gr\=\"\\4\)\[01T7ajQJvL\$W\~mL_sS\/4h\:x\*\[ZN\=KLs\&L5zX\/\/\>it\,o\:aU\(\;Z\>pW\&T7oP\'2K\^E\:x9\'c\[\%z\-\,64JQ5AeH_G\#KijUKghQw\^\\vea3a\?kka_G\$8\#\`\*kynsxzBLru\'\]k_\[7FrVx\}\^\=\$blx\>s\-N\%j\;D\*aZDnsw\:YKZ\%Q\.Kne9\#hP\?\+b3\(SOvL\,\^\;\&u5\@\?5C5Bhb\=m\-vEh_L15Jl\]U\)0RP6\{q\%L\^_z5E\'Dw6X\b|IDM
+|\$\<\.X\+ix\[d1b\!H\#\?vV0vrK\:ZH1\=2M\>iV\;\?aPhFB\<\*vW\@QW\@sO9\}cfZA\-i\'w\%hKd6gt1UJP\,15_\#QY\$M\^Mss_U\/\]\&LK9\[5vQub\^w\[KDD\<EjmhUZ\?\.akp2dF\>qmj\;2\}YWFdYx\.Ap\]hjCPTP\(n28k\+3\;o\&WXqs\/gOXdr\$\:r\'do0\;b4c\(f_Gr\=\"\\4\)\[01T7ajQJvL\$W\~mL_sS\/4h\:x\*\[ZN\=KLs\&L5zX\/\/\>it\,o\:aU\(\;Z\>pW\&T7oP\'2K\^E\:x9\'c\[\%z\-\,64JQ5AeH_G\#KijUKghQw\^\\vea3a\?kka_G\$8\#\`\*kynsxzBLru\'\]k_\[7FrVx\}\^\=\$blx\>s\-N\%j\;D\*aZDnsw\:YKZ\%Q\.Kne9\#hP\?\+b3\(SOvL\,\^\;\&u5\@\?5C5Bhb\=m\-vEh_L15Jl\]U\)0RP6\{q\%L\^_z5E\'Dw6X\b|IDZ
 
 /(.*)\d+\1/I
 
@@ -1120,9 +1120,9 @@
    >abc>1(2)3<xyz<
    >abc>(1(2)3)<xyz<
 
-/(a(?1)b)/D
+/(a(?1)b)/DZ
 
-/(a(?1)+b)/D
+/(a(?1)+b)/DZ
 
 /^\W*(?:((.)\W*(?1)\W*\2|)|((.)\W*(?3)\W*\4|\W*.\W*))\W*$/Ii
     1221
@@ -1173,13 +1173,13 @@
     a=b
     a=bc
 
-/a(?P<name1>b|c)d(?P<longername2>e)/D
+/a(?P<name1>b|c)d(?P<longername2>e)/DZ
     abde
     acde
 
-/(?:a(?P<c>c(?P<d>d)))(?P<a>a)/D
+/(?:a(?P<c>c(?P<d>d)))(?P<a>a)/DZ
 
-/(?P<a>a)...(?P=a)bbb(?P>a)d/D
+/(?P<a>a)...(?P=a)bbb(?P>a)d/DZ
 
 /^\W*(?:(?P<one>(?P<two>.)\W*(?P>one)\W*(?P=two)|)|(?P<three>(?P<four>.)\W*(?P>three)\W*(?P=four)|\W*.\W*))\W*$/Ii
     1221
@@ -1215,13 +1215,13 @@
 
 /(.*)|(.*)|(.*)|(.*)|(.*)|(.*)|(.*)|(.*)|(.*)|(.*)|(.*)|(.*)|(.*)|(.*)|(.*)|(.*)|(.*)|(.*)|(.*)|(.*)|(.*)|(.*)|(.*)|(.*)|(.*)|(.*)|(.*)|(.*)|(.*)|(.*)|(.*)|(.*)a\32/Is
 
-/(a)(bc)/IND
+/(a)(bc)/INDZ
   abc
 
-/(?P<one>a)(bc)/IND
+/(?P<one>a)(bc)/INDZ
   abc
 
-/(a)(?P<named>bc)/IND
+/(a)(?P<named>bc)/INDZ
 
 /(a+)*zz/I
   aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaazzbbbbbb\M
@@ -1239,9 +1239,9 @@
     abcdefgh\Cone\Ctwo
     abcdefgh\Cthree
 
-/(?P<Tes>)(?P<Test>)/D
+/(?P<Tes>)(?P<Test>)/DZ
 
-/(?P<Test>)(?P<Tes>)/D
+/(?P<Test>)(?P<Tes>)/DZ
 
 /(?P<Z>zz)(?P<A>aa)/I
     zzaa\CZ
@@ -1260,13 +1260,13 @@
     [10,20,30,5,5,4,4,2,43,23,4234]
     []
 
-/(a(b(?2)c))?/D
+/(a(b(?2)c))?/DZ
 
-/(a(b(?2)c))*/D
+/(a(b(?2)c))*/DZ
 
-/(a(b(?2)c)){0,2}/D
+/(a(b(?2)c)){0,2}/DZ
 
-/[ab]{1}+/D
+/[ab]{1}+/DZ
 
 /((w\/|-|with)*(free|immediate)*.*?shipping\s*[!.-]*)/Ii
      Baby Bjorn Active Carrier - With free SHIPPING!!
@@ -1274,27 +1274,27 @@
 /((w\/|-|with)*(free|immediate)*.*?shipping\s*[!.-]*)/IiS
      Baby Bjorn Active Carrier - With free SHIPPING!!
 
-/a*.*b/ISD
+/a*.*b/ISDZ
 
-/(a|b)*.?c/ISD
+/(a|b)*.?c/ISDZ
 
-/abc(?C255)de(?C)f/D
+/abc(?C255)de(?C)f/DZ
 
-/abcde/ICD
+/abcde/ICDZ
   abcde
   abcdfe
 
-/a*b/ICD
+/a*b/ICDZ
   ab
   aaaab
   aaaacb
 
-/a+b/ICD
+/a+b/ICDZ
   ab
   aaaab
   aaaacb
 
-/(abc|def)x/ICD
+/(abc|def)x/ICDZ
   abcx
   defx
   abcdefzx
@@ -1304,10 +1304,10 @@
   abcdabcd
   abcdcdcdcdcd
 
-/([ab]{,4}c|xy)/ICD
+/([ab]{,4}c|xy)/ICDZ
     Note: that { does NOT introduce a quantifier
 
-/([ab]{1,4}c|xy){4,5}?123/ICD
+/([ab]{1,4}c|xy){4,5}?123/ICDZ
     aacaacaacaacaac123
 
 /\b.*/I
@@ -1667,18 +1667,18 @@ a random value. /Ix
 
 /(d?|c)[ab]xyz/IS
 
-/^a*b\d/D
+/^a*b\d/DZ
 
-/^a*+b\d/D
+/^a*+b\d/DZ
 
-/^a*?b\d/D
+/^a*?b\d/DZ
 
-/^a+A\d/D
+/^a+A\d/DZ
     aaaA5
     ** Failers
     aaaa5
 
-/^a*A\d/IiD
+/^a*A\d/IiDZ
     aaaA5
     aaaa5
 
@@ -1700,137 +1700,137 @@ a random value. /Ix
 /Ix
   large nest
 
-/a*\d/B
+/a*\d/BZ
 
-/a*\D/B
+/a*\D/BZ
 
-/0*\d/B
+/0*\d/BZ
 
-/0*\D/B
+/0*\D/BZ
 
-/a*\s/B
+/a*\s/BZ
 
-/a*\S/B
+/a*\S/BZ
 
-/ *\s/B
+/ *\s/BZ
 
-/ *\S/B
+/ *\S/BZ
 
-/a*\w/B
+/a*\w/BZ
 
-/a*\W/B
+/a*\W/BZ
 
-/=*\w/B
+/=*\w/BZ
 
-/=*\W/B
+/=*\W/BZ
 
-/\d*a/B
+/\d*a/BZ
 
-/\d*2/B
+/\d*2/BZ
 
-/\d*\d/B
+/\d*\d/BZ
 
-/\d*\D/B
+/\d*\D/BZ
 
-/\d*\s/B
+/\d*\s/BZ
 
-/\d*\S/B
+/\d*\S/BZ
 
-/\d*\w/B
+/\d*\w/BZ
 
-/\d*\W/B
+/\d*\W/BZ
 
-/\D*a/B
+/\D*a/BZ
 
-/\D*2/B
+/\D*2/BZ
 
-/\D*\d/B
+/\D*\d/BZ
 
-/\D*\D/B
+/\D*\D/BZ
 
-/\D*\s/B
+/\D*\s/BZ
 
-/\D*\S/B
+/\D*\S/BZ
 
-/\D*\w/B
+/\D*\w/BZ
 
-/\D*\W/B
+/\D*\W/BZ
 
-/\s*a/B
+/\s*a/BZ
 
-/\s*2/B
+/\s*2/BZ
 
-/\s*\d/B
+/\s*\d/BZ
 
-/\s*\D/B
+/\s*\D/BZ
 
-/\s*\s/B
+/\s*\s/BZ
 
-/\s*\S/B
+/\s*\S/BZ
 
-/\s*\w/B
+/\s*\w/BZ
 
-/\s*\W/B
+/\s*\W/BZ
 
-/\S*a/B
+/\S*a/BZ
 
-/\S*2/B
+/\S*2/BZ
 
-/\S*\d/B
+/\S*\d/BZ
 
-/\S*\D/B
+/\S*\D/BZ
 
-/\S*\s/B
+/\S*\s/BZ
 
-/\S*\S/B
+/\S*\S/BZ
 
-/\S*\w/B
+/\S*\w/BZ
 
-/\S*\W/B
+/\S*\W/BZ
 
-/\w*a/B
+/\w*a/BZ
 
-/\w*2/B
+/\w*2/BZ
 
-/\w*\d/B
+/\w*\d/BZ
 
-/\w*\D/B
+/\w*\D/BZ
 
-/\w*\s/B
+/\w*\s/BZ
 
-/\w*\S/B
+/\w*\S/BZ
 
-/\w*\w/B
+/\w*\w/BZ
 
-/\w*\W/B
+/\w*\W/BZ
 
-/\W*a/B
+/\W*a/BZ
 
-/\W*2/B
+/\W*2/BZ
 
-/\W*\d/B
+/\W*\d/BZ
 
-/\W*\D/B
+/\W*\D/BZ
 
-/\W*\s/B
+/\W*\s/BZ
 
-/\W*\S/B
+/\W*\S/BZ
 
-/\W*\w/B
+/\W*\w/BZ
 
-/\W*\W/B
+/\W*\W/BZ
 
-/[^a]+a/B
+/[^a]+a/BZ
 
-/[^a]+a/Bi
+/[^a]+a/BZi
 
-/[^a]+A/Bi
+/[^a]+A/BZi
 
-/[^a]+b/B
+/[^a]+b/BZ
 
-/[^a]+\d/B
+/[^a]+\d/BZ
 
-/a*[^a]/B
+/a*[^a]/BZ
 
 /(?P<abc>x)(?P<xyz>y)/I
     xy\Cabc\Cxyz
@@ -1885,23 +1885,23 @@ a random value. /Ix
     Xaaa
     Xaba
 
-/^[\E\Qa\E-\Qz\E]+/B
+/^[\E\Qa\E-\Qz\E]+/BZ
 
-/^[a\Q]bc\E]/B
+/^[a\Q]bc\E]/BZ
 
-/^[a-\Q\E]/B
+/^[a-\Q\E]/BZ
 
-/^(?P>abc)[()](?<abc>)/B
+/^(?P>abc)[()](?<abc>)/BZ
 
-/^((?(abc)y)[()](?P<abc>x))+/B
+/^((?(abc)y)[()](?P<abc>x))+/BZ
     (xy)x
 
-/^(?P>abc)\Q()\E(?<abc>)/B
+/^(?P>abc)\Q()\E(?<abc>)/BZ
 
-/^(?P>abc)[a\Q(]\E(](?<abc>)/B
+/^(?P>abc)[a\Q(]\E(](?<abc>)/BZ
 
 /^(?P>abc) # this is (a comment)
-  (?<abc>)/Bx
+  (?<abc>)/BZx
 
 /^\W*(?:(?<one>(?<two>.)\W*(?&one)\W*\k<two>|)|(?<three>(?<four>.)\W*(?&three)\W*\k'four'|\W*.\W*))\W*$/Ii
     1221
@@ -2155,5 +2155,175 @@ a random value. /Ix
     XABC
     ** Failers 
     XABC\B
+
+/(ab|c)(?-1)/BZ
+    abc
+
+/xy(?+1)(abc)/BZ
+    xyabcabc
+    ** Failers
+    xyabc  
+    
+/x(?-0)y/
+
+/x(?-1)y/
+
+/x(?+0)y/ 
+
+/x(?+1)y/
+
+/^(abc)?(?(-1)X|Y)/BZ
+    abcX
+    Y
+    ** Failers
+    abcY   
+    
+/^((?(+1)X|Y)(abc))+/BZ 
+    YabcXabc
+    YabcXabcXabc
+    ** Failers
+    XabcXabc  
+
+/(?(-1)a)/BZ
+
+/((?(-1)a))/BZ
+
+/((?(-2)a))/BZ
+
+/^(?(+1)X|Y)/BZ
+    Y
+
+/(foo)\Kbar/
+    foobar
+   
+/(foo)(\Kbar|baz)/
+    foobar
+    foobaz 
+
+/(foo\Kbar)baz/
+    foobarbaz
+
+/(?<A>tom|bon)-\k{A}/
+    tom-tom
+    bon-bon 
+    ** Failers
+    tom-bon  
+
+/(?<A>tom|bon)-\g{A}/
+    tom-tom
+    bon-bon 
+    
+/\g{A/ 
+
+/(?|(abc)|(xyz))/BZ
+   >abc<
+   >xyz< 
+
+/(x)(?|(abc)|(xyz))(x)/BZ
+    xabcx
+    xxyzx 
+
+/(x)(?|(abc)(pqr)|(xyz))(x)/BZ
+    xabcpqrx
+    xxyzx 
+
+/(?|(abc)|(xyz))\1/
+    abcabc
+    xyzxyz 
+    ** Failers
+    abcxyz
+    xyzabc   
+    
+/(?|(abc)|(xyz))(?1)/
+    abcabc
+    xyzabc 
+    ** Failers 
+    xyzxyz 
+ 
+/\H\h\V\v/
+    X X\x0a
+    X\x09X\x0b
+    ** Failers
+    \xa0 X\x0a   
+    
+/\H*\h+\V?\v{3,4}/ 
+    \x09\x20\xa0X\x0a\x0b\x0c\x0d\x0a
+    \x09\x20\xa0\x0a\x0b\x0c\x0d\x0a
+    \x09\x20\xa0\x0a\x0b\x0c
+    ** Failers 
+    \x09\x20\xa0\x0a\x0b
+     
+/\H{3,4}/
+    XY  ABCDE
+    XY  PQR ST 
+    
+/.\h{3,4}./
+    XY  AB    PQRS
+
+/\h*X\h?\H+Y\H?Z/
+    >XNNNYZ
+    >  X NYQZ
+    ** Failers
+    >XYZ   
+    >  X NY Z
+
+/\v*X\v?Y\v+Z\V*\x0a\V+\x0b\V{2,3}\x0c/
+    >XY\x0aZ\x0aA\x0bNN\x0c
+    >\x0a\x0dX\x0aY\x0a\x0bZZZ\x0aAAA\x0bNNN\x0c
+
+/[\h]/BZ
+    >\x09<
+
+/[\h]+/BZ
+    >\x09\x20\xa0<
+
+/[\v]/BZ
+
+/[\H]/BZ
+
+/[^\h]/BZ
+
+/[\V]/BZ
+
+/[\x0a\V]/BZ
+
+/\H++X/BZ
+    ** Failers
+    XXXX
+    
+/\H+\hY/BZ
+    XXXX Y 
+
+/\H+ Y/BZ
+
+/\h+A/BZ
+
+/\v*B/BZ
+
+/\V+\x0a/BZ
+
+/A+\h/BZ
+
+/ *\H/BZ
+
+/A*\v/BZ
+
+/\x0b*\V/BZ
+
+/\d+\h/BZ
+
+/\d*\v/BZ
+
+/S+\h\S+\v/BZ
+
+/\w{3,}\h\w+\v/BZ
+
+/\h+\d\h+\w\h+\S\h+\H/BZ
+
+/\v+\d\v+\w\v+\S\v+\V/BZ
+
+/\H+\h\H+\d/BZ
+
+/\V+\v\V+\w/BZ
 
 / End of testinput2 /
